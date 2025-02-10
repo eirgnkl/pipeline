@@ -4,6 +4,7 @@ import os
 import scanpy as sc
 
 # Load Snakemake variables
+#task and featsel are wildcards, along with hash
 task = snakemake.wildcards.task
 featsel = snakemake.wildcards.featsel
 output_rna = snakemake.output.rna_ds
@@ -25,16 +26,18 @@ spec.loader.exec_module(feature_selection_module)
 os.makedirs(os.path.dirname(output_rna), exist_ok=True)
 os.makedirs(os.path.dirname(output_msi), exist_ok=True)
 
-
-# Load tuning parameters from the tuning file (assumed TSV)
-tuning_file = snakemake.input.tuning
-tuning_df = pd.read_csv(tuning_file, sep="|")
-
-# Filter parameters for the current feature selection method and convert to dict
-tuning_dict = tuning_df[tuning_df["method"] == featsel].set_index("parameter")["value"].to_dict()
-
 # Run feature selection for RNA and MSI
 adata_rna = sc.read_h5ad(input_rna)
 adata_msi = sc.read_h5ad(input_metabolomics)
 
-feature_selection_module.process(adata_rna, adata_msi, output_rna, output_msi, params=tuning_dict)
+feature_selection_module.process(adata_rna, adata_msi, output_rna, output_msi)
+
+# def hvg(adata_rna, adata_msi):
+# def hvg_svd(adata_rna, adata_msi):
+# # def scvi(adata):
+# # def scvi_graph(adata):
+# # def svd(adata):
+# # def svd_graph():
+# # def hvg_svd_graph(): 
+
+
