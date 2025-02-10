@@ -3,15 +3,15 @@ import pandas as pd
 import os
 import scanpy as sc
 
-# Load Snakemake variables
-#task and featsel are wildcards, along with hash
+#Load Snakemake variables
+#task and featsel are wildcards [just like hash and model]
 task = snakemake.wildcards.task
 featsel = snakemake.wildcards.featsel
 output_rna = snakemake.output.rna_ds
 output_msi = snakemake.output.msi_ds
 tasks_df = pd.read_csv(snakemake.input.tasks_df, sep="\t")
 
-# Get input datasets
+#Extract correct datasets for input by figuring out the line where task and featsel are the correct ones
 task_row = tasks_df[(tasks_df["task"] == task) & (tasks_df["featsel"] == featsel)].iloc[0]
 input_rna = task_row["input_rna"]
 input_metabolomics = task_row["input_metabolomics"]
@@ -26,18 +26,8 @@ spec.loader.exec_module(feature_selection_module)
 os.makedirs(os.path.dirname(output_rna), exist_ok=True)
 os.makedirs(os.path.dirname(output_msi), exist_ok=True)
 
-# Run feature selection for RNA and MSI
+#Set correct datasets
 adata_rna = sc.read_h5ad(input_rna)
 adata_msi = sc.read_h5ad(input_metabolomics)
 
 feature_selection_module.process(adata_rna, adata_msi, output_rna, output_msi)
-
-# def hvg(adata_rna, adata_msi):
-# def hvg_svd(adata_rna, adata_msi):
-# # def scvi(adata):
-# # def scvi_graph(adata):
-# # def svd(adata):
-# # def svd_graph():
-# # def hvg_svd_graph(): 
-
-
