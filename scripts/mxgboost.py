@@ -80,7 +80,7 @@ def run_xgboost(
     spearman_corr = spearmanr(Y_pred.flatten(), Y_test.flatten())[0]
 
     #MSE and R2
-    mse_test = root_mean_squared_error(Y_test, Y_pred, squared=False)
+    mse_test = root_mean_squared_error(Y_test, Y_pred)
     r2_test = r2_score(Y_test, Y_pred)
 
     # Save results to a DataFrame
