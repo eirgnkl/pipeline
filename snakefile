@@ -3,6 +3,7 @@ from snakemake.utils import Paramspace
 from scripts.utils import create_tasks_df
 from pprint import pprint
 import numpy as np
+import os
 
 ## Current script can process only most 
 
@@ -12,7 +13,9 @@ import numpy as np
 # Be careful, so far there is no dynamic selection for feature selection. You can specify your parameters, but not have multiple
 # versions of the same preprocessing method
 
+
 # Generate tasks DataFrame and load configuration
+os.makedirs("data", exist_ok=True)
 tasks_df = create_tasks_df('config.yaml', save='data/tasks.tsv')
 tasks_df = pd.read_csv('data/tasks.tsv', sep='\t')
 
@@ -56,6 +59,9 @@ rule feat_sel:
 
 
 rule run_method:
+    input:
+        rna_ds="dataset/processed/{task}/{featsel}/rna_dataset.h5ad",
+        msi_ds="dataset/processed/{task}/{featsel}/msi_dataset.h5ad"
     output:
         tsv='data/reports/{task}/{featsel}/{method}/{hash}/accuracy.tsv'
     params:
