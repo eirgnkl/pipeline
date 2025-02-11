@@ -27,3 +27,11 @@ TASKS:
           - hvg_svd_graph
           - svd
           - svd_graph
+      xgboost:
+        params: params/xgboost_params.tsv
+        featsel:
+          - hvg
+          - hvg_svd
+          - hvg_svd_graph
+          - svd
+          - svd_graph
