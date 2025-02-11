@@ -1,26 +1,3 @@
-from xgboost import XGBRegressor
-
-
-def run_xgboost(
-        adata_rna,
-        adata_metabolomics, 
-        params,
-        featsel,
-        **kwargs):
-    
-    xgb_model = XGBRegressor(device="cuda", n_jobs=20, reg_alpha=50, \
-                        reg_lambda=100, max_depth=3, subsample=0.8, colsample_bytree=0.8, \
-                        learning_rate=0.05, n_estimators=1000, min_child_weight=3, early_stopping_rounds=10)
-
-    # Train
-    xgb_model.fit(adata_rna, adata_msi, eval_set=[(adata_rna, adata_metabolomics)], verbose=True)
-
-    # Predict
-    predictions = xgb_model.predict(adata_rna_feat_test)
-
-
-    return (predictions)
-
 import numpy as np
 import pandas as pd
 import scanpy as sc
@@ -30,17 +7,32 @@ from sklearn.metrics import root_mean_squared_error, r2_score
 
 
 # Function to run XGBoost regression
-def run_xgboost(adata_rna, 
-                    adata_metabolomics,
-                    params, 
-                    **kwargs):
+def run_xgboost(
+        adata_rna,
+        adata_metabolomics, 
+        params, 
+        featsel,
+        **kwargs):
 
-    # Extract data matrices
-    split = adata_rna.obs['split']
-    X_rna = adata_rna.X
+    #adding feature selection as a param to select correct parts of the adata
+    if featsel == "hvg":
+        X_rna = adata_rna.X  # Use raw HVG-selected features
+    elif featsel == "hvg_svd":
+        X_rna = adata_rna.obsm["svd_features"]
+    elif featsel == "hvg_svd_graph":
+        X_rna = adata_rna.obsm["svd_graph_features"]
+    elif featsel == "svd":
+        X_rna = adata_rna.obsm["svd_features"]
+    elif featsel == "svd_graph":
+        X_rna = adata_rna.obsm["svd_graph_features"]
+    else:
+        raise ValueError(f"Unsupported feature selection method: {featsel}")
+
     Y_metabolomics = adata_metabolomics.X
 
     # Train-test split based on 'split' column
+    split = adata_rna.obs['split']
+
     train_idx = np.where(split == 'train')[0]
     test_idx = np.where(split == 'test')[0]
 
