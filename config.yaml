@@ -30,7 +30,7 @@ TASKS:
       xgboost:
         params: params/xgboost_params.tsv
         featsel:
-          - hvg
+          # - hvg
           - hvg_svd
           - hvg_svd_graph
           - svd
