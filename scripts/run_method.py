@@ -10,7 +10,7 @@ import ast
 from ridge import run_ridge_reg
 from linear import run_linreg
 from lasso import run_lasso
-from xgboost import run_xgboost
+from mxgboost import run_xgboost
 
 # Dictionary mapping method names to their functions - connect config->smk->run_methods->function.py 
 METHOD_MAP = {
