@@ -26,13 +26,22 @@ tasks = tasks_df['task'].unique()
 
 rule all:
     input:
-        # Datasets
+        # Train/Test RNA datasets
         [
-            f"dataset/processed/{row['task']}/{row['featsel']}/rna_dataset.h5ad"
+            f"dataset/processed/{row['task']}/{row['featsel']}/rna_dataset_train.h5ad"
+            for _, row in tasks_df.iterrows()
+        ] +
+        [
+            f"dataset/processed/{row['task']}/{row['featsel']}/rna_dataset_test.h5ad"
             for _, row in tasks_df.iterrows()
         ],
+        # Train/Test MSI datasets
         [
-            f"dataset/processed/{row['task']}/{row['featsel']}/msi_dataset.h5ad"
+            f"dataset/processed/{row['task']}/{row['featsel']}/msi_dataset_train.h5ad"
+            for _, row in tasks_df.iterrows()
+        ] +
+        [
+            f"dataset/processed/{row['task']}/{row['featsel']}/msi_dataset_test.h5ad"
             for _, row in tasks_df.iterrows()
         ],
         # Reports
@@ -43,15 +52,17 @@ rule all:
         # Ensure the merged and best results are generated
         'data/reports/merged_results.tsv',
         'data/reports/best_results.tsv'
-        
+
 
 rule feat_sel:
     input:
         tasks_df="data/tasks.tsv",
         tuning="scripts/feature_selection/tuning.tsv"
     output:
-        rna_ds="dataset/processed/{task}/{featsel}/rna_dataset.h5ad",
-        msi_ds="dataset/processed/{task}/{featsel}/msi_dataset.h5ad"
+        rna_ds_train="dataset/processed/{task}/{featsel}/rna_dataset_train.h5ad",
+        rna_ds_test="dataset/processed/{task}/{featsel}/rna_dataset_test.h5ad",
+        msi_ds_train="dataset/processed/{task}/{featsel}/msi_dataset_train.h5ad",
+        msi_ds_test="dataset/processed/{task}/{featsel}/msi_dataset_test.h5ad"
     params:
         featsel_script="scripts/feature_selection/{featsel}.py"
     script:
@@ -60,8 +71,10 @@ rule feat_sel:
 
 rule run_method:
     input:
-        rna_ds="dataset/processed/{task}/{featsel}/rna_dataset.h5ad",
-        msi_ds="dataset/processed/{task}/{featsel}/msi_dataset.h5ad"
+        rna_ds_train="dataset/processed/{task}/{featsel}/rna_dataset_train.h5ad",
+        rna_ds_test="dataset/processed/{task}/{featsel}/rna_dataset_test.h5ad",
+        msi_ds_train="dataset/processed/{task}/{featsel}/msi_dataset_train.h5ad",
+        msi_ds_test="dataset/processed/{task}/{featsel}/msi_dataset_test.h5ad"
     output:
         tsv='data/reports/{task}/{featsel}/{method}/{hash}/accuracy.tsv'
     params:
@@ -96,10 +109,10 @@ rule find_best:
         import pandas as pd
         df = pd.read_csv(input.tsv, sep='\t')
         best_rows = []
-        grouped = df.groupby(['method_name', 'featsel', 'task'])
+        grouped = df.groupby(['method_name', 'task'])
 
         # Iterate through groups, find best rows
-        for (method_name, featsel, task), group in grouped:
+        for (method_name, task), group in grouped:
             for metric in ['mse', 'r2', 'pearson', 'spearman']:
                 if metric in group.columns:
                     best_row = group.loc[group[metric].idxmax() if metric != 'mse' else group[metric].idxmin()]
