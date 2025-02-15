@@ -59,7 +59,6 @@ def run_ridge_reg(
     # r2_train = r2_score(matching_msi_train, msi_train_pred)
     r2_test = r2_score(Y_test, Y_pred)
 
-
     # Save results to a DataFrame
     results = pd.DataFrame({
     'mse': [mse_test],

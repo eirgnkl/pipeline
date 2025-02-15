@@ -45,7 +45,6 @@ def run_linreg(
     else:
         raise ValueError(f"Unsupported feature selection method: {featsel}")
    
-   
     # Convert to dense if needed
     X_train = convert_to_dense(X_train)
     X_test = convert_to_dense(X_test)
