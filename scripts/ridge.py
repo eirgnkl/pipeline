@@ -6,39 +6,40 @@ from scipy.stats import pearsonr, spearmanr
 from sklearn.metrics import root_mean_squared_error, r2_score
 
 
-
-#pass each parameter seperately for the actual function
+#maybe update pipeline to pass each parameter seperately for the actual function at some point
 def run_ridge_reg(
-        adata_rna,
-        adata_metabolomics, 
+        adata_rna_train,
+        adata_rna_test,
+        adata_msi_train,
+        adata_msi_test, 
         params, 
         featsel,
         **kwargs):
     
     #adding feature selection as a param to select correct parts of the adata
     if featsel == "hvg":
-        X_rna = adata_rna.X  # Use raw HVG-selected features
+        X_train = adata_rna_train.X  
+        X_test = adata_rna_test.X  
+        Y_train, Y_test = adata_msi_train.X, adata_msi_test.X
     elif featsel == "hvg_svd":
-        X_rna = adata_rna.obsm["svd_features"]
+        X_train = adata_rna_train.obsm["svd_features"]
+        X_test = adata_rna_test.obsm["svd_features"]
+        Y_train, Y_test = adata_msi_train.X, adata_msi_test.X
     elif featsel == "hvg_svd_graph":
-        X_rna = adata_rna.obsm["svd_graph_features"]
+        X_train = adata_rna_train.obsm["svd_graph"]
+        X_test = adata_rna_test.obsm["svd_graph"] 
+        Y_train, Y_test = adata_msi_train.X, adata_msi_test.X
     elif featsel == "svd":
-        X_rna = adata_rna.obsm["svd_features"]
+        X_train = adata_rna_train.obsm["svd_features"]
+        X_test = adata_rna_test.obsm["svd_features"]
+        Y_train, Y_test = adata_msi_train.X, adata_msi_test.X
     elif featsel == "svd_graph":
-        X_rna = adata_rna.obsm["svd_graph_features"]
+        X_train = adata_rna_train.obsm["svd_graph"]
+        X_test = adata_rna_test.obsm["svd_graph"]
+        Y_train, Y_test = adata_msi_train.X, adata_msi_test.X
     else:
         raise ValueError(f"Unsupported feature selection method: {featsel}")
-        
-    #msi always processed with just hvd or nothing
-    Y_metabolomics = adata_metabolomics.X
 
-    #Train-test split based on 'split' column
-    split = adata_rna.obs['split']
-    train_idx = np.where(split == 'train')[0]
-    test_idx = np.where(split == 'test')[0]
-
-    X_train, X_test = X_rna[train_idx], X_rna[test_idx]
-    Y_train, Y_test = Y_metabolomics[train_idx], Y_metabolomics[test_idx]
 
     # Ridge regression with specified alpha
     alpha = float(params['alpha'] ) # have as function parameter

@@ -7,35 +7,37 @@ from scipy.stats import spearmanr, pearsonr
 import numpy as np
 
 def run_lasso(
-        adata_rna,
-        adata_metabolomics, 
+        adata_rna_train,
+        adata_rna_test,
+        adata_msi_train,
+        adata_msi_test,
         params, 
         featsel,
         **kwargs):
 
     #adding feature selection as a param to select correct parts of the adata
     if featsel == "hvg":
-        X_rna = adata_rna.X  # Use raw HVG-selected features
+        X_train = adata_rna_train.X  
+        X_test = adata_rna_test.X  
+        Y_train, Y_test = adata_msi_train.X, adata_msi_test.X
     elif featsel == "hvg_svd":
-        X_rna = adata_rna.obsm["svd_features"]
+        X_train = adata_rna_train.obsm["svd_features"]
+        X_test = adata_rna_test.obsm["svd_features"]
+        Y_train, Y_test = adata_msi_train.X, adata_msi_test.X
     elif featsel == "hvg_svd_graph":
-        X_rna = adata_rna.obsm["svd_graph_features"]
+        X_train = adata_rna_train.obsm["svd_graph"]
+        X_test = adata_rna_test.obsm["svd_graph"] 
+        Y_train, Y_test = adata_msi_train.X, adata_msi_test.X
     elif featsel == "svd":
-        X_rna = adata_rna.obsm["svd_features"]
+        X_train = adata_rna_train.obsm["svd_features"]
+        X_test = adata_rna_test.obsm["svd_features"]
+        Y_train, Y_test = adata_msi_train.X, adata_msi_test.X
     elif featsel == "svd_graph":
-        X_rna = adata_rna.obsm["svd_graph_features"]
+        X_train = adata_rna_train.obsm["svd_graph"]
+        X_test = adata_rna_test.obsm["svd_graph"]
+        Y_train, Y_test = adata_msi_train.X, adata_msi_test.X
     else:
         raise ValueError(f"Unsupported feature selection method: {featsel}")
-
-    Y_metabolomics = adata_metabolomics.X
-
-    # Train-test split based on 'split' column
-    split = adata_rna.obs['split']
-    train_idx = np.where(split == 'train')[0]
-    test_idx = np.where(split == 'test')[0]
-
-    X_train, X_test = X_rna[train_idx], X_rna[test_idx]
-    Y_train, Y_test = Y_metabolomics[train_idx], Y_metabolomics[test_idx]
 
     # Lasso regression with specified alpha
     alpha = float(params['alpha'] ) # have as function parameter

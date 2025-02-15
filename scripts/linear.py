@@ -13,39 +13,44 @@ def convert_to_dense(matrix):
     return matrix
 
 def run_linreg(
-        adata_rna,
-        adata_metabolomics,
+        adata_rna_train,
+        adata_rna_test,
+        adata_msi_train,
+        adata_msi_test, 
+        params, 
         featsel,
         **kwargs):
 
     #adding feature selection as a param to select correct parts of the adata
     if featsel == "hvg":
-        X_rna = adata_rna.X  # Use raw HVG-selected features
+        X_train = adata_rna_train.X  
+        X_test = adata_rna_test.X  
+        Y_train, Y_test = adata_msi_train.X, adata_msi_test.X
     elif featsel == "hvg_svd":
-        X_rna = adata_rna.obsm["svd_features"]
+        X_train = adata_rna_train.obsm["svd_features"]
+        X_test = adata_rna_test.obsm["svd_features"]
+        Y_train, Y_test = adata_msi_train.X, adata_msi_test.X
     elif featsel == "hvg_svd_graph":
-        X_rna = adata_rna.obsm["svd_graph_features"]
+        X_train = adata_rna_train.obsm["svd_graph"]
+        X_test = adata_rna_test.obsm["svd_graph"] 
+        Y_train, Y_test = adata_msi_train.X, adata_msi_test.X
     elif featsel == "svd":
-        X_rna = adata_rna.obsm["svd_features"]
+        X_train = adata_rna_train.obsm["svd_features"]
+        X_test = adata_rna_test.obsm["svd_features"]
+        Y_train, Y_test = adata_msi_train.X, adata_msi_test.X
     elif featsel == "svd_graph":
-        X_rna = adata_rna.obsm["svd_graph_features"]
+        X_train = adata_rna_train.obsm["svd_graph"]
+        X_test = adata_rna_test.obsm["svd_graph"]
+        Y_train, Y_test = adata_msi_train.X, adata_msi_test.X
     else:
         raise ValueError(f"Unsupported feature selection method: {featsel}")
-        
-    #msi always processed with just hvd or nothing
-    Y_metabolomics = adata_metabolomics.X
-
-    #convert to dense if needed
-    X_rna = convert_to_dense(X_rna)
-    Y_metabolomics = convert_to_dense(Y_metabolomics)
-
-    #Train-test split based on 'split' column
-    split = adata_rna.obs['split']
-    train_idx = np.where(split == 'train')[0]
-    test_idx = np.where(split == 'test')[0]
-
-    X_train, X_test = X_rna[train_idx], X_rna[test_idx]
-    Y_train, Y_test = Y_metabolomics[train_idx], Y_metabolomics[test_idx]
+   
+   
+    # Convert to dense if needed
+    X_train = convert_to_dense(X_train)
+    X_test = convert_to_dense(X_test)
+    Y_train = convert_to_dense(Y_train)
+    Y_test = convert_to_dense(Y_test)
 
     # Fit linear regression
     lin = LinearRegression()

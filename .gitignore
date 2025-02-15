@@ -3,3 +3,4 @@ data
 *.pyc
 extra
 .snakemake
+scripts/.ipynb_checkpoints/

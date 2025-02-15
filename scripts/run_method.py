@@ -22,16 +22,21 @@ METHOD_MAP = {
 
 # Load parameters from Snakemake
 params = snakemake.params.thisparam 
+input_rna_train = snakemake.input.rna_ds_train
+input_rna_test = snakemake.input.rna_ds_test
+input_msi_train = snakemake.input.msi_ds_train
+input_msi_test = snakemake.input.msi_ds_test
+
 
  # Task parameters
 method = params['method']
 task = params['task']
 hash_id = params['hash']
 featsel = params['featsel']
-# input_rna = params['input_rna']
+# input_rna = input['input_rna']
 # input_metabolomics = params['input_metabolomics']
-processed_rna = f"dataset/processed/{task}/{featsel}/rna_dataset.h5ad"
-processed_msi = f"dataset/processed/{task}/{featsel}/msi_dataset.h5ad"
+# processed_rna = f"dataset/processed/{task}/{featsel}/rna_dataset.h5ad"
+# processed_msi = f"dataset/processed/{task}/{featsel}/msi_dataset.h5ad"
 
 
 method_params = ast.literal_eval(params['params'])
@@ -44,11 +49,18 @@ method_function = METHOD_MAP[method]['function']
 
 # Load data based on method mode
 if method_mode == 'paired':
-    adata_rna = sc.read_h5ad(processed_rna)
-    adata_metabolomics = sc.read_h5ad(processed_msi)
+    
+    #pass extracted input path to create each ds
+    adata_rna_train = sc.read_h5ad(input_rna_train)
+    adata_rna_test = sc.read_h5ad(input_rna_test)
+    adata_msi_train = sc.read_h5ad(input_msi_train)
+    adata_msi_test = sc.read_h5ad(input_msi_test)
+
     result_df = method_function(
-        adata_rna=adata_rna,
-        adata_metabolomics=adata_metabolomics,
+        adata_rna_train=adata_rna_train,
+        adata_rna_test=adata_rna_test,
+        adata_msi_train=adata_msi_train,
+        adata_msi_test=adata_msi_test, 
         params=method_params,
         featsel=featsel
         )
