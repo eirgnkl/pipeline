@@ -34,7 +34,7 @@ rule all:
         [
             f"dataset/processed/{row['task']}/{row['featsel']}/rna_dataset_test.h5ad"
             for _, row in tasks_df.iterrows()
-        ],
+        ] +
         # Train/Test MSI datasets
         [
             f"dataset/processed/{row['task']}/{row['featsel']}/msi_dataset_train.h5ad"
@@ -43,15 +43,22 @@ rule all:
         [
             f"dataset/processed/{row['task']}/{row['featsel']}/msi_dataset_test.h5ad"
             for _, row in tasks_df.iterrows()
-        ],
-        # Reports
+        ] +
+        # Individual accuracy reports for each config setting
         [
-            f"data/reports/{row['task']}/{row['featsel']}/{row['method']}/{row['hash']}/accuracy.tsv"
+            f"data/reports/{row['task']}/{row['method']}/{row['featsel']}/{row['hash']}/accuracy.tsv"
             for _, row in tasks_df.iterrows()
-        ],
-        # Ensure the merged and best results are generated
-        'data/reports/merged_results.tsv',
-        'data/reports/best_results.tsv'
+        ] +
+        # Merged results for each unique task
+        [
+            f"data/reports/{task}/merged_results.tsv"
+            for task in tasks_df['task'].unique()
+        ] +
+        # Best results for each unique task
+        [
+            f"data/reports/{task}/best_results.tsv"
+            for task in tasks_df['task'].unique()
+        ]
 
 
 rule feat_sel:
@@ -64,7 +71,8 @@ rule feat_sel:
         msi_ds_train="dataset/processed/{task}/{featsel}/msi_dataset_train.h5ad",
         msi_ds_test="dataset/processed/{task}/{featsel}/msi_dataset_test.h5ad"
     params:
-        featsel_script="scripts/feature_selection/{featsel}.py"
+        featsel_script="scripts/feature_selection/{featsel}.py",
+        split=lambda wildcards: tasks_df.loc[tasks_df['task'] == wildcards.task, 'split'].unique()[0]
     script:
         "scripts/run_featsel.py"
 
@@ -76,7 +84,7 @@ rule run_method:
         msi_ds_train="dataset/processed/{task}/{featsel}/msi_dataset_train.h5ad",
         msi_ds_test="dataset/processed/{task}/{featsel}/msi_dataset_test.h5ad"
     output:
-        tsv='data/reports/{task}/{featsel}/{method}/{hash}/accuracy.tsv'
+        tsv='data/reports/{task}/{method}/{featsel}/{hash}/accuracy.tsv'
     params:
         thisparam=lambda wildcards: tasks_df.loc[tasks_df['hash'] == wildcards.hash, :].iloc[0, :].to_dict()
     script:
@@ -86,7 +94,7 @@ rule run_method:
 rule merge:
     input:
         expand(
-            'data/reports/{task}/{featsel}/{method}/{hash}/accuracy.tsv',
+            'data/reports/{task}/{method}/{featsel}/{hash}/accuracy.tsv',
             zip,
             task=tasks_df['task'].values,
             featsel=tasks_df['featsel'].values,
@@ -94,7 +102,7 @@ rule merge:
             hash=tasks_df['hash'].values
         )
     output:
-        tsv='data/reports/merged_results.tsv'
+        tsv='data/reports/{task}/merged_results.tsv'
     run:
         dfs = [pd.read_csv(file, sep='\t') for file in input if os.path.exists(file)]
         merged_df = pd.concat(dfs)
@@ -102,9 +110,9 @@ rule merge:
 
 rule find_best:
     input:
-        tsv='data/reports/merged_results.tsv'
+        tsv='data/reports/{task}/merged_results.tsv'
     output:
-        tsv='data/reports/best_results.tsv'
+        tsv='data/reports/{task}/best_results.tsv'
     run:
         import pandas as pd
         df = pd.read_csv(input.tsv, sep='\t')
