@@ -4,12 +4,12 @@
 
 import scanpy as sc
 
-def process(adata_rna, adata_msi, output_rna_train, output_rna_test, output_msi_train, output_msi_test, params=None):
+def process(adata_rna, adata_msi, output_rna_train, output_rna_test, output_msi_train, output_msi_test, split, params=None):
     
     #Use an empty dict in case no params avail
     params = params or {}
     top_genes = params.get("top_genes", 5000)
-    split_name = params.get("split_name", "split")
+    split_name = split
 
 
     #-----HVG-----#

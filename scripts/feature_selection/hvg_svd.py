@@ -2,13 +2,13 @@ import scanpy as sc
 import numpy as np
 from sklearn.decomposition import TruncatedSVD
 
-def process(adata_rna, adata_msi, output_rna_train, output_rna_test, output_msi_train, output_msi_test, params=None):
+def process(adata_rna, adata_msi, output_rna_train, output_rna_test, output_msi_train, output_msi_test, split, params=None):
    
    #Extract input params
     params = params or {}
     top_genes = params.get("top_genes", 5000)
     n_components = params.get("n_components", 16)
-    split_name = params.get("split_name", "split")
+    split_name = split
 
     #----------------------------------------------sc-seqRNA----------------------------------------------#
     #-----HVG-----#

@@ -5,13 +5,13 @@ from sklearn.decomposition import TruncatedSVD
 from sklearn.preprocessing import StandardScaler
 
 
-def process(adata_rna, adata_msi, output_rna_train, output_rna_test, output_msi_train, output_msi_test, params=None):
+def process(adata_rna, adata_msi, output_rna_train, output_rna_test, output_msi_train, output_msi_test, split, params=None):
 
     #Extract input params
     params = params or {}
     n_components = params.get("n_components", 16)
     n_neighbors = params.get("n_neighbors", 6)
-    split_name = params.get("split_name", "split")
+    split_name = split
 
     #Split into train test
     rna_train = adata_rna[adata_rna.obs[split_name] == "train"]

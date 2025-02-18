@@ -1,15 +1,11 @@
 method|parameter|value
 hvg|top_genes|200
-hvg|split_name|split
 hvg_svd|top_genes|200
-hvg_svd|split_name|split
 hvg_svd|n_components|20
 svd|n_components|20
 svd|split_name|split
 svd_graph|n_components|20
-svd_graph|split_name|split
 svd_graph|n_neighbours|5
 hvg_svd_graph|top_genes|200
 hvg_svd_graph|n_components|20
-hvg_svd_graph|split_name|split
 hvg_svd_graph|n_neighbours|5
