@@ -7,7 +7,6 @@ import scanpy as sc
 #task and featsel are wildcards [just like hash and model]
 task = snakemake.wildcards.task
 featsel = snakemake.wildcards.featsel
-split = snakemake.params.split
 output_rna_train = snakemake.output.rna_ds_train
 output_rna_test = snakemake.output.rna_ds_test
 output_msi_train = snakemake.output.msi_ds_train
@@ -17,7 +16,7 @@ output_msi_test = snakemake.output.msi_ds_test
 # --- Added: Skip if outputs already exist ---
 outputs = [output_rna_train, output_rna_test, output_msi_train, output_msi_test]
 if all(os.path.exists(f) for f in outputs):
-    print("All output files already exist. Skipping feature selection.")
+    print("All output files already exist. Skipping feature selection.", flush=True)
     exit(0)
 
 tasks_df = pd.read_csv(snakemake.input.tasks_df, sep="\t")
@@ -26,6 +25,7 @@ tasks_df = pd.read_csv(snakemake.input.tasks_df, sep="\t")
 task_row = tasks_df[(tasks_df["task"] == task) & (tasks_df["featsel"] == featsel)].iloc[0]
 input_rna = task_row["input_rna"]
 input_metabolomics = task_row["input_metabolomics"]
+split = task_row["split"]
 
 # Dynamically load the feature selection script
 feat_sel_script = snakemake.params.featsel_script
