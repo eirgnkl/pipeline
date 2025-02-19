@@ -7,10 +7,18 @@ import scanpy as sc
 #task and featsel are wildcards [just like hash and model]
 task = snakemake.wildcards.task
 featsel = snakemake.wildcards.featsel
+split = snakemake.params.split
 output_rna_train = snakemake.output.rna_ds_train
 output_rna_test = snakemake.output.rna_ds_test
 output_msi_train = snakemake.output.msi_ds_train
 output_msi_test = snakemake.output.msi_ds_test
+
+
+# --- Added: Skip if outputs already exist ---
+outputs = [output_rna_train, output_rna_test, output_msi_train, output_msi_test]
+if all(os.path.exists(f) for f in outputs):
+    print("All output files already exist. Skipping feature selection.")
+    exit(0)
 
 tasks_df = pd.read_csv(snakemake.input.tasks_df, sep="\t")
 
@@ -36,4 +44,19 @@ os.makedirs(os.path.dirname(output_msi_test), exist_ok=True)
 adata_rna = sc.read_h5ad(input_rna)
 adata_msi = sc.read_h5ad(input_metabolomics)
 
-feature_selection_module.process(adata_rna, adata_msi, output_rna_train, output_rna_test, output_msi_train, output_msi_test)
+#Read the tuning parameters from tuning.tsv
+tuning_file =snakemake.input.tuning
+tuning_df = pd.read_csv(tuning_file, sep="|")
+
+#Extract params
+tuning_params = tuning_df[tuning_df["method"] == featsel].iloc[0].to_dict()
+
+# Pass the parameters into the process function
+feature_selection_module.process(
+    adata_rna, adata_msi,
+    output_rna_train, output_rna_test,
+    output_msi_train, output_msi_test,
+    split,
+    params=tuning_params
+)
+
