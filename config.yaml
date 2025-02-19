@@ -1,44 +1,81 @@
 TASKS:
-  'vitatrack':
-    input_rna: /lustre/groups/ml01/workspace/anastasia.litinetskaya/code/vitatrack/datasets/V11L12-038_A1.RNA_MOSCOT_paired_hvg.h5ad
-    input_metabolomics: /lustre/groups/ml01/workspace/anastasia.litinetskaya/code/vitatrack/datasets/V11L12-038_A1.MSI_MOSCOT_paired_hvg.h5ad
-    split: split
-    methods:
-      ridge:
-        params: params/ridge_params.tsv
-        featsel:
-          - hvg
-          - hvg_svd
-          - hvg_svd_graph
-          - svd
-          - svd_graph
-      lasso:
-        params: params/lasso_params.tsv
-        featsel:
-          - hvg
-          - hvg_svd
-          - hvg_svd_graph
-          - svd
-          - svd_graph
-      # linear:
-      #   params: params/linreg_params.tsv
-      #   featsel:
-      #     - hvg
-      #     - hvg_svd
-      #     - hvg_svd_graph
-      #     - svd
-      #     - svd_graph
-      # xgboost:
-      #   params: params/xgboost_params.tsv
-      #   featsel:
-      #     - hvg
-      #     - hvg_svd
-      #     - hvg_svd_graph
-      #     - svd
-      #     - svd_graph
-  'lipids':
-    input_rna: /lustre/groups/ml01/workspace/anastasia.litinetskaya/code/vitatrack/datasets/RNA_concat_lipids.h5ad
-    input_metabolomics: /lustre/groups/ml01/workspace/anastasia.litinetskaya/code/vitatrack/datasets/MSI_concat_lipids.h5ad
+  # 'vitatrack':
+  #   input_rna: /lustre/groups/ml01/workspace/anastasia.litinetskaya/code/vitatrack/datasets/V11L12-038_A1.RNA_MOSCOT_paired_hvg.h5ad
+  #   input_metabolomics: /lustre/groups/ml01/workspace/anastasia.litinetskaya/code/vitatrack/datasets/V11L12-038_A1.MSI_MOSCOT_paired_hvg.h5ad
+  #   split: split
+  #   methods:
+  #     ridge:
+  #       params: params/ridge_params.tsv
+  #       featsel:
+  #         - hvg
+  #         - hvg_svd
+  #         - hvg_svd_graph
+  #         - svd
+  #         - svd_graph
+  #     lasso:
+  #       params: params/lasso_params.tsv
+  #       featsel:
+  #         - hvg
+  #         - hvg_svd
+  #         - hvg_svd_graph
+  #         - svd
+  #         - svd_graph
+  #     linear:
+  #       params: params/linreg_params.tsv
+  #       featsel:
+  #         - hvg
+  #         - hvg_svd
+  #         - hvg_svd_graph
+  #         - svd
+  #         - svd_graph
+  #     xgboost:
+  #       params: params/xgboost_params.tsv
+  #       featsel:
+  #         - hvg
+  #         - hvg_svd
+  #         - hvg_svd_graph
+  #         - svd
+  #         - svd_graph
+  # 'lipids':
+  #   input_rna: /lustre/groups/ml01/workspace/anastasia.litinetskaya/code/vitatrack/datasets/RNA_concat_lipids.h5ad
+  #   input_metabolomics: /lustre/groups/ml01/workspace/anastasia.litinetskaya/code/vitatrack/datasets/MSI_concat_lipids.h5ad
+  #   split: half_split
+  #   methods:
+  #     ridge:
+  #       params: params/ridge_params.tsv
+  #       featsel:
+  #         - hvg
+  #         - hvg_svd
+  #         - hvg_svd_graph
+  #         - svd
+  #         - svd_graph
+  #     lasso:
+  #       params: params/lasso_params.tsv
+  #       featsel:
+  #         - hvg
+  #         - hvg_svd
+  #         - hvg_svd_graph
+  #         - svd
+  #         - svd_graph
+  #     linear:
+  #       params: params/linreg_params.tsv
+  #       featsel:
+  #         - hvg
+  #         - hvg_svd
+  #         - hvg_svd_graph
+  #         - svd
+  #         - svd_graph
+  #     xgboost:
+  #       params: params/xgboost_params.tsv
+  #       featsel:
+  #         - hvg
+  #         - hvg_svd
+  #         - hvg_svd_graph
+  #         - svd
+  #         - svd_graph
+  'neuro':
+    input_rna: /lustre/groups/ml01/workspace/anastasia.litinetskaya/code/vitatrack/datasets/RNA_concat_neurotransmitters.h5ad
+    input_metabolomics: /lustre/groups/ml01/workspace/anastasia.litinetskaya/code/vitatrack/datasets/MSI_concat_neurotransmitters.h5ad
     split: half_split
     methods:
       ridge:
@@ -57,19 +94,19 @@ TASKS:
           - hvg_svd_graph
           - svd
           - svd_graph
-  #     # linear:
-  #     #   params: params/linreg_params.tsv
-  #     #   featsel:
-  #     #     - hvg
-  #     #     - hvg_svd
-  #     #     - hvg_svd_graph
-  #     #     - svd
-  #     #     - svd_graph
-  #     xgboost:
-  #       params: params/xgboost_params.tsv
-  #       featsel:
-  #         - hvg
-  #         - hvg_svd
-  #         - hvg_svd_graph
-  #         - svd
-  #         - svd_graph
+      linear:
+        params: params/linreg_params.tsv
+        featsel:
+          - hvg
+          - hvg_svd
+          - hvg_svd_graph
+          - svd
+          - svd_graph
+      xgboost:
+        params: params/xgboost_params.tsv
+        featsel:
+          - hvg
+          - hvg_svd
+          - hvg_svd_graph
+          - svd
+          - svd_graph
