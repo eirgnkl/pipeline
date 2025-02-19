@@ -64,7 +64,8 @@ def run_lasso(
     'mse': [mse_test],
     'r2': [r2_test],
     'pearson': [pearson_corr],
-    'spearman': [spearman_corr], 
-    'alpha': [alpha]})
+    'spearman': [spearman_corr] 
+    # 'alpha': [alpha]
+    })
 
     return results
