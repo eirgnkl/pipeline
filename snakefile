@@ -60,7 +60,6 @@ rule all:
             for task in tasks_df['task'].unique()
         ]
 
-
 rule feat_sel:
     input:
         tasks_df="data/tasks.tsv",
@@ -71,10 +70,10 @@ rule feat_sel:
         msi_ds_train="dataset/processed/{task}/{featsel}/msi_dataset_train.h5ad",
         msi_ds_test="dataset/processed/{task}/{featsel}/msi_dataset_test.h5ad"
     params:
-        featsel_script="scripts/feature_selection/{featsel}.py",
-        split=lambda wildcards: tasks_df.loc[tasks_df['task'] == wildcards.task, 'split'].unique()[0]
+        featsel_script="scripts/feature_selection/{featsel}.py"
     script:
         "scripts/run_featsel.py"
+
 
 
 rule run_method:
