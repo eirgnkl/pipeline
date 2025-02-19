@@ -12,6 +12,8 @@ def process(adata_rna, adata_msi, output_rna_train, output_rna_test, output_msi_
     n_components = params.get("n_components", 16)
     n_neighbors = params.get("n_neighbors", 6)
     split_name = split
+    adata_rna.obs_names_make_unique()
+    adata_msi.obs_names_make_unique()
 
     #----------------------------------------------sc-seqRNA----------------------------------------------#
     #-----HVG-----#
@@ -34,26 +36,43 @@ def process(adata_rna, adata_msi, output_rna_train, output_rna_test, output_msi_
     hvg_rna_test.obsm["svd_features"] = svd_features_test
 
     #-----GRAPH-----#
-    ##Check if og data has spatial connectivities obsp else do the process here:
+    # #Check if og data has spatial connectivities or else create the connectivity matrix 
+    if "spatial_connectivities" not in hvg_rna_train.var.columns:
+        hvg_rna_train.obs_names_make_unique()
+        hvg_rna_test.obs_names_make_unique()
 
+        hvg_rna_train.obs_names = hvg_rna_train.obs.og_index.tolist().copy()
+        hvg_rna_train.obs_names_make_unique()
+        hvg_rna_train.obs_names = hvg_rna_train.obs_names + "_11"
 
-    graph_feat_train = svd_reducer.fit_transform(hvg_rna_train[hvg_rna_train.obs_names].obsp["spatial_connectivities"])
-    graph_feat_test = svd_reducer.fit_transform(hvg_rna_test[hvg_rna_test.obs_names].obsp["spatial_connectivities"])
+        hvg_rna_test.obs_names = hvg_rna_test.obs.og_index.tolist().copy()
+        hvg_rna_test.obs_names_make_unique()
+        hvg_rna_test.obs_names = hvg_rna_test.obs_names + "_22"
 
+        adata_temp = sc.concat([hvg_rna_train, hvg_rna_test])
+        sq.gr.spatial_neighbors(adata_temp, coord_type="grid", spatial_key="spatial", n_neighs=n_neighbors)
+        svd_reducer = TruncatedSVD(n_components=n_components)
 
+        graph_feat_train = svd_reducer.fit_transform(adata_temp[hvg_rna_train.obs_names].obsp["spatial_connectivities"])
+        graph_feat_test = svd_reducer.fit_transform(adata_temp[hvg_rna_test.obs_names].obsp["spatial_connectivities"])
+    else:
+         svd_reducer = TruncatedSVD(n_components=n_components)
+         graph_feat_train = svd_reducer.fit_transform(hvg_rna_train.obsp["spatial_connectivities"])
+         graph_feat_test = svd_reducer.fit_transform(hvg_rna_test.obsp["spatial_connectivities"])
+
+    ##Concatenate the standardized features as obtained by svd applied on adata.X and on the s
     sc_svd = StandardScaler()
     sc_gr = StandardScaler()
 
-    #Concatentate the features 
-    rna_hsg_train = np.concatenate([sc_svd.fit_transform(svd_features_train), \
+    rna_sg_train = np.concatenate([sc_svd.fit_transform(svd_features_train), \
                                             sc_gr.fit_transform(graph_feat_train)],
                                          axis=1)
-    hvg_rna_train.obsm["svd_graph"] = rna_hsg_train
+    hvg_rna_train.obsm["svd_graph"] = rna_sg_train
 
-    rna_hsg_test = np.concatenate([sc_svd.fit_transform(svd_features_test), \
+    rna_sg_test = np.concatenate([sc_svd.fit_transform(svd_features_test), \
                                             sc_gr.fit_transform(graph_feat_test)],
                                          axis=1)
-    hvg_rna_test.obsm["svd_graph"] = rna_hsg_test
+    hvg_rna_test.obsm["svd_graph"] = rna_sg_test
 
     #----------------------------------------------MSI----------------------------------------------#
     #-----HVG-----#
