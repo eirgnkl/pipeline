@@ -37,12 +37,10 @@ featsel = params['featsel']
 # input_metabolomics = params['input_metabolomics']
 # processed_rna = f"dataset/processed/{task}/{featsel}/rna_dataset.h5ad"
 # processed_msi = f"dataset/processed/{task}/{featsel}/msi_dataset.h5ad"
-
+# output_method_params = params['params']
 
 method_params = ast.literal_eval(params['params'])
-
 output_file = snakemake.output.tsv
-
 # Load the appropriate method function
 method_mode = METHOD_MAP[method]['mode']
 method_function = METHOD_MAP[method]['function']
@@ -68,7 +66,7 @@ if method_mode == 'paired':
 # Add metadata to the results and save to output file
 result_df['hash'] = hash_id
 result_df['task'] = task
-result_df['method_params'] = method_params
+result_df['method_params'] = str(method_params)
 result_df['method_name'] = method
 result_df['featsel'] = featsel
 result_df.to_csv(output_file, sep='\t', index=False)
