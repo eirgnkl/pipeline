@@ -31,7 +31,7 @@ def process(adata_rna, adata_msi, output_rna_train, output_rna_test, output_msi_
 
     #-----GRAPH-----#
     # #Check if og data has spatial connectivities or else create the connectivity matrix 
-    if "spatial_connectivities" not in rna_train.var.columns:
+    if "spatial_connectivities" not in rna_train.obsp:
         rna_train.obs_names_make_unique()
         rna_test.obs_names_make_unique()
 
