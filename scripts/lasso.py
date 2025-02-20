@@ -55,13 +55,13 @@ def run_lasso(
 
     #MSE and R2
     # mse_train = root_mean_squared_error(Y_train, Y_train_pred)
-    mse_test = root_mean_squared_error(Y_test, Y_pred)
+    rmse_test = root_mean_squared_error(Y_test, Y_pred)
     # r2_train = r2_score(matching_msi_train, msi_train_pred)
     r2_test = r2_score(Y_test, Y_pred)
 
     # Save results to a DataFrame
     results = pd.DataFrame({
-    'mse': [mse_test],
+    'rmse': [rmse_test],
     'r2': [r2_test],
     'pearson': [pearson_corr],
     'spearman': [spearman_corr] 

@@ -4,7 +4,7 @@ import scanpy as sc
 import cupy as cp  # For GPU array conversion
 from xgboost import XGBRegressor
 from scipy.stats import pearsonr, spearmanr
-from sklearn.metrics import mean_squared_error, r2_score  # Using MSE then taking sqrt
+from sklearn.metrics import root_mean_squared_error, r2_score  # Using MSE then taking sqrt
 from scipy.sparse import issparse
 
 
@@ -94,7 +94,7 @@ def run_xgboost(
     colsample_bytree = float(params.get("colsample_bytree", 0.7))
     min_child_weight = int(params.get("min_child_weight", 2))
     early_stopping_rounds = int(params.get("early_stopping_rounds", 20))
-    n_jobs = int(params.get("n_jobs", 20))
+    n_jobs = int(params.get("n_jobs", 15))
 
 
     # Initialize XGBoost model on GPU
@@ -132,12 +132,12 @@ def run_xgboost(
     spearman_corr = spearmanr(Y_pred.flatten(), Y_test_cpu.flatten())[0]
 
     # Compute Root Mean Squared Error and R2 score
-    mse_test = np.sqrt(mean_squared_error(Y_test_cpu, Y_pred))
+    rmse_test = root_mean_squared_error(Y_test_cpu, Y_pred)
     r2_test = r2_score(Y_test_cpu, Y_pred)
 
     # Save results to a DataFrame
     results = pd.DataFrame({
-        "mse": [mse_test],
+        "rmse": [rmse_test],
         "r2": [r2_test],
         "pearson": [pearson_corr],
         "spearman": [spearman_corr]
