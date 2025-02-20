@@ -1,7 +1,7 @@
 dataset
 data 
 *.pyc
-extra
+ipynbs
 .snakemake
 test_xgboost.ipynb
 viz_test.ipynb
