@@ -89,13 +89,13 @@ rule run_method:
 
 rule merge:
     input:
-        expand(
+        lambda wildcards: expand(
             "data/reports/{task}/{method}/{featsel}/{hash}/accuracy.tsv",
             zip,
-            task=tasks_df['task'].values,
-            featsel=tasks_df['featsel'].values,
-            method=tasks_df['method'].values,
-            hash=tasks_df['hash'].values
+            task=[wildcards.task] * len(tasks_df[tasks_df['task'] == wildcards.task]),
+            method=tasks_df[tasks_df['task'] == wildcards.task]['method'].tolist(),
+            featsel=tasks_df[tasks_df['task'] == wildcards.task]['featsel'].tolist(),
+            hash=tasks_df[tasks_df['task'] == wildcards.task]['hash'].tolist()
         )
     output:
         tsv="data/reports/{task}/merged_results.tsv"
