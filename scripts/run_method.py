@@ -12,6 +12,7 @@ from linear import run_linreg
 from lasso import run_lasso
 from mxgboost import run_xgboost
 from elastic_net import run_elastic_net
+from cvae import run_cvae
 
 # Dictionary mapping method names to their functions - connect config->smk->run_methods->function.py 
 METHOD_MAP = {
@@ -19,7 +20,8 @@ METHOD_MAP = {
     'lasso': dict(function=run_lasso, mode='paired'),
     'linear': dict(function=run_linreg, mode='paired'),
     'xgboost': dict(function=run_xgboost, mode='paired'),
-    'elastic_net': dict(function=run_elastic_net, mode='paired')
+    'elastic_net': dict(function=run_elastic_net, mode='paired'),
+    'cvae': dict(function=run_cvae, mode='paired')
 }
 
 # Load parameters from Snakemake
