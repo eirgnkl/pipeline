@@ -4,6 +4,13 @@ import scanpy as sc
 from sklearn.linear_model import ElasticNet
 from sklearn.metrics import root_mean_squared_error, r2_score
 from scipy.stats import pearsonr, spearmanr
+from scipy.sparse import issparse
+
+def convert_to_dense(matrix):
+    """Converts a sparse matrix to dense if necessary."""
+    if issparse(matrix):
+        return matrix.toarray()
+    return matrix
 
 def run_elastic_net(
         adata_rna_train,
@@ -13,6 +20,7 @@ def run_elastic_net(
         params, 
         featsel,
         **kwargs):
+    
     # Select features based on the provided feature selection method
     if featsel == "hvg":
         X_train = adata_rna_train.X  
@@ -36,6 +44,13 @@ def run_elastic_net(
         Y_train, Y_test = adata_msi_train.X, adata_msi_test.X
     else:
         raise ValueError(f"Unsupported feature selection method: {featsel}")
+    
+    # Convert to dense if needed
+    X_train = convert_to_dense(X_train)
+    X_test = convert_to_dense(X_test)
+    Y_train = convert_to_dense(Y_train)
+    Y_test = convert_to_dense(Y_test)
+
 
     # Retrieve hyperparameters from the params dictionary
     alpha = float(params['alpha'])
