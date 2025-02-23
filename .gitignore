@@ -7,3 +7,4 @@ test_xgboost.ipynb
 viz_test.ipynb
 scripts/.ipynb_checkpoints/
 .ipynb_checkpoints/
+logs
