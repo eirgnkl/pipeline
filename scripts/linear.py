@@ -1,4 +1,5 @@
 import pandas as pd
+import scanpy as sc
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score, root_mean_squared_error
 from scipy.stats import spearmanr, pearsonr
