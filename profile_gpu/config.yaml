@@ -1,14 +1,15 @@
 
 
 cluster: 
-  mkdir -p logs/{rule} && sbatch --partition={resources.partition} --gres=gpu:{resources.gpu} --mem={resources.mem_mb} --qos={resources.qos} --job-name=smk-{rule}-{wildcards} --output=logs/{rule}/%j-{rule}-{wildcards}.out --error=logs/{rule}/%j-{rule}-{wildcards}.err --nice=10000 --exclude=supergpu05,supergpu08,supergpu07,supergpu02,supergpu03 --parsable
+  mkdir -p logs/{rule} && sbatch --partition={resources.partition} --gres=gpu:{resources.gpu} --mem={resources.mem_mb} --qos={resources.qos} --time={resources.time} --job-name=smk-{rule}-{wildcards} --output=logs/{rule}/%j-{rule}-{wildcards}.out --error=logs/{rule}/%j-{rule}-{wildcards}.err --nice=10000 --exclude=supergpu05,supergpu08,supergpu07,supergpu02,supergpu03 --parsable
 
 default-resources:
   - partition=gpu_p
-  - gpu=2
+  - gpu=1
   - qos=gpu_normal
   - mem_mb=32000
   - disk_mb=40000
+  - time='2:00:00'
 
 jobs: 10
 keep-going: True
@@ -16,7 +17,7 @@ keep-incomplete: True
 printshellcmds: True
 scheduler: greedy
 use-conda: True
-# cluster-cancel: scancel {cluster_jobid}
+cluster-cancel: scancel {cluster_jobid}
 show-failed-logs: True
 latency-wait: 90
 verbose: True
@@ -34,17 +35,3 @@ verbose: True
 # latency-wait: 90
 # verbose: True
 # cluster-status: workflow/scripts/status.py
-
-# cluster: |
-  # mkdir -p logs/{rule} &&
-  # sbatch \
-  #   --partition={resources.partition} \
-  #   --gres=gpu:{resources.gpu} \
-  #   --mem={resources.mem_mb} \
-  #   --qos={resources.qos} \
-  #   --job-name=smk-{rule}-{wildcards}\
-  #   --output=logs/{rule}/%j-{rule}-{wildcards}.out \
-  #   --error=logs/{rule}/%j-{rule}-{wildcards}.err \
-  #   --nice=10000 \
-  #   --exclude=supergpu05,supergpu08,supergpu07,supergpu02,supergpu03 \
-  #   --parsable 
