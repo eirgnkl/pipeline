@@ -22,16 +22,5 @@ show-failed-logs: True
 latency-wait: 90
 verbose: True
 
-# jobs: 10
-# keep-going: True
-# keep-incomplete: True
-# printshellcmds: True
-# scheduler: greedy
-# use-conda: True
-# cluster-cancel: scancel
-# show-failed-logs: True
-# # configfile: config.json
-# printshellcmds: True
-# latency-wait: 90
-# verbose: True
+# configfile: config.json
 # cluster-status: workflow/scripts/status.py
