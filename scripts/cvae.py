@@ -157,11 +157,20 @@ def run_cvae(adata_rna_train,
         rmse_test = np.sqrt(mean_squared_error(Y_test_np, Y_pred))
         r2_test = r2_score(Y_test_np, Y_pred)
 
-        results = pd.DataFrame({
+
+        #Save results to a DataFrame
+        metrics = pd.DataFrame({
             'rmse': [rmse_test],
             'r2': [r2_test],
             'pearson': [pearson_corr],
             'spearman': [spearman_corr]
         })
 
-    return results
+        #Add this for interpretability later, check outputs of each model's preds
+        predictions = pd.DataFrame({
+            'y_true': Y_test_np.flatten(),
+            'y_pred': Y_pred.flatten()
+        })
+
+    return metrics, predictions
+

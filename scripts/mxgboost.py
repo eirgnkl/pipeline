@@ -135,24 +135,21 @@ def run_xgboost(
     rmse_test = root_mean_squared_error(Y_test_cpu, Y_pred)
     r2_test = r2_score(Y_test_cpu, Y_pred)
 
-    # Save results to a DataFrame
-    results = pd.DataFrame({
-        "rmse": [rmse_test],
-        "r2": [r2_test],
-        "pearson": [pearson_corr],
-        "spearman": [spearman_corr]
-        # "alpha": [alpha],
-        # "lambda": [lambda_],
-        # "max_depth": [max_depth],
-        # "learning_rate": [learning_rate],
-        # "n_estimators": [n_estimators],
-        # "subsample": [subsample],
-        # "colsample_bytree": [colsample_bytree],
-        # "min_child_weight": [min_child_weight]
+    #Save results to a DataFrame
+    metrics = pd.DataFrame({
+        'rmse': [rmse_test],
+        'r2': [r2_test],
+        'pearson': [pearson_corr],
+        'spearman': [spearman_corr]
     })
 
-    return results
+    #Add this for interpretability later, check outputs of each model's preds
+    predictions = pd.DataFrame({
+        'y_true': Y_test_cpu.flatten(),
+        'y_pred': Y_pred.flatten()
+    })
 
+    return metrics, predictions
 # Got this error, had to add conversion to and from GPU arrays for the run of the model
 # UserWarning: [14:56:43] WARNING: /home/conda/feedstock_root/build_artifacts/xgboost-split_1738880369036/work/src/common/error_msg.cc:58: 
 # Falling back to prediction using DMatrix due to mismatched devices. 
