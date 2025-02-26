@@ -31,20 +31,13 @@ input_rna_test = snakemake.input.rna_ds_test
 input_msi_train = snakemake.input.msi_ds_train
 input_msi_test = snakemake.input.msi_ds_test
 
-
- # Task parameters
+# Task parameters
 method = params['method']
 task = params['task']
 hash_id = params['hash']
 featsel = params['featsel']
-# input_rna = input['input_rna']
-# input_metabolomics = params['input_metabolomics']
-# processed_rna = f"dataset/processed/{task}/{featsel}/rna_dataset.h5ad"
-# processed_msi = f"dataset/processed/{task}/{featsel}/msi_dataset.h5ad"
-# output_method_params = params['params']
 
 method_params = ast.literal_eval(params['params'])
-output_file = snakemake.output.tsv
 # Load the appropriate method function
 method_mode = METHOD_MAP[method]['mode']
 method_function = METHOD_MAP[method]['function']
@@ -58,19 +51,22 @@ if method_mode == 'paired':
     adata_msi_train = sc.read_h5ad(input_msi_train)
     adata_msi_test = sc.read_h5ad(input_msi_test)
 
-    result_df = method_function(
+    metrics_df, predictions_df = method_function(
         adata_rna_train=adata_rna_train,
         adata_rna_test=adata_rna_test,
         adata_msi_train=adata_msi_train,
         adata_msi_test=adata_msi_test, 
         params=method_params,
         featsel=featsel
-        )
+    )
+
 
 # Add metadata to the results and save to output file
-result_df['task'] = task
-result_df['method_name'] = method
-result_df['featsel'] = featsel
-result_df['method_params'] = str(method_params)
-result_df['hash'] = hash_id
-result_df.to_csv(output_file, sep='\t', index=False)
+metrics_df['task'] = task
+metrics_df['method_name'] = method
+metrics_df['featsel'] = featsel
+metrics_df['method_params'] = str(method_params)
+metrics_df['hash'] = hash_id
+metrics_df.to_csv(snakemake.output.metrics, sep='\t', index=False)
+
+predictions_df.to_csv(snakemake.output.predictions, sep='\t', index=False)
