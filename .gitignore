@@ -8,5 +8,3 @@ viz_test.ipynb
 scripts/.ipynb_checkpoints/
 .ipynb_checkpoints/
 logs
-scripts/mdn.py
-scripts/gnn.py
