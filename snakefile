@@ -3,7 +3,7 @@ from snakemake.utils import Paramspace
 from scripts.utils import create_tasks_df
 from pprint import pprint
 import numpy as np
-import os
+import os, time
 
 # Instructions for user:
 # 1. Make sure to select your parameters for the models in folder params by naming your file according to model_params.tsv
@@ -16,6 +16,13 @@ import os
 # Generate tasks DataFrame and load configuration
 os.makedirs("data", exist_ok=True)
 tasks_df = create_tasks_df('config.yaml', save='data/tasks.tsv')
+
+# Wait until the file has some content
+max_wait = 10
+while os.path.getsize('data/tasks.tsv') == 0 and max_wait > 0:
+    time.sleep(1)
+    max_wait -= 1
+
 tasks_df = pd.read_csv('data/tasks.tsv', sep='\t')
 
 # Extract unique task details
@@ -52,6 +59,13 @@ rule all:
                method=tasks_df['method'].str.strip().tolist(),
                featsel=tasks_df['featsel'].str.strip().tolist(),
                hash=tasks_df['hash'].str.strip().tolist()),
+        # Predictions from each method
+        expand("data/reports/{task}/{method}/{featsel}/{hash}/predictions.tsv",
+               zip,
+               task=tasks_df['task'].str.strip().tolist(),
+               method=tasks_df['method'].str.strip().tolist(),
+               featsel=tasks_df['featsel'].str.strip().tolist(),
+               hash=tasks_df['hash'].str.strip().tolist()),
         # Merged and best results per unique task
         expand("data/reports/{task}/merged_results.tsv",
                task=[t.strip() for t in tasks_df['task'].unique()]),
@@ -80,7 +94,8 @@ rule run_method:
         msi_ds_train="dataset/processed/{task}/{featsel}/msi_dataset_train.h5ad",
         msi_ds_test="dataset/processed/{task}/{featsel}/msi_dataset_test.h5ad"
     output:
-        tsv="data/reports/{task}/{method}/{featsel}/{hash}/accuracy.tsv"
+        metrics="data/reports/{task}/{method}/{featsel}/{hash}/accuracy.tsv",
+        predictions="data/reports/{task}/{method}/{featsel}/{hash}/predictions.tsv"
     params:
         thisparam=lambda wildcards: tasks_df.loc[tasks_df['hash'] == wildcards.hash, :].iloc[0, :].to_dict()
     script:
