@@ -68,5 +68,4 @@ metrics_df['featsel'] = featsel
 metrics_df['method_params'] = str(method_params)
 metrics_df['hash'] = hash_id
 metrics_df.to_csv(snakemake.output.metrics, sep='\t', index=False)
-
 predictions_df.to_csv(snakemake.output.predictions, sep='\t', index=False)
