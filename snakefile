@@ -80,7 +80,8 @@ rule run_method:
         msi_ds_train="dataset/processed/{task}/{featsel}/msi_dataset_train.h5ad",
         msi_ds_test="dataset/processed/{task}/{featsel}/msi_dataset_test.h5ad"
     output:
-        tsv="data/reports/{task}/{method}/{featsel}/{hash}/accuracy.tsv"
+        metrics="data/reports/{task}/{method}/{featsel}/{hash}/accuracy.tsv",
+        predictions="data/reports/{task}/{method}/{featsel}/{hash}/predictions.tsv"
     params:
         thisparam=lambda wildcards: tasks_df.loc[tasks_df['hash'] == wildcards.hash, :].iloc[0, :].to_dict()
     script:
