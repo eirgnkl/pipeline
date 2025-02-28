@@ -11,7 +11,6 @@ The pipeline is structured as follows:
 1. **Feature Preprocessing**: Selects relevant features using different feature selection methods.
 2. **Model Training**: Runs Ridge, Lasso, Linear Regression, XGBoost and a CVAE.
 3. **Evaluation**: Assesses performance using 4 different metrics (RMSE, Pearson and Spearmann Correlation and $R^2$).
-4. **Comparison of Consecutive vs. Same-Slide Data**.
 
 ## Feature Preprocessing
 
