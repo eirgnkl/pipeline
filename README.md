@@ -30,10 +30,11 @@ Feature selection is specified in `config.yaml` under the `featsel` key.
 
 model is specified in `config.yaml` under the `methods` key.
 
-1. Name your TASK and set correct paths to your RNA and MSI datasets
-2. Define the name of the split that you want to use for the task (this is used later in both feature selection and training thus it's set up in the config.yaml)
-3. Specify the methods (models) that you want to use to make predictions. For the parameter tuning keep reading.
-4. Select the different ways of preprocessing that you want your models to run with.
+1. 'task' is specified in `config.yaml` under the `TASKS` key.
+2. Set correct paths to your RNA and MSI datasets in `input_rna` and `input_metabolomics`
+3. Define the name of the `split `that you want to use for the task (this is used later in both feature selection and training thus it's set up in the `config.yaml`)
+4. Specify the `methods` (models) that you want to use to make predictions. For the parameter tuning keep reading.
+5. Select the different ways of preprocessing that you want your models to run with, under the `featsel` key.
 
 ```
 TASKS:
