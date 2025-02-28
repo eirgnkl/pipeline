@@ -22,7 +22,7 @@ The dataset undergoes multiple feature selection techniques to reduce dimensiona
 - **svd**: Singular value decomposition.
 - **svd+graph**: Graph-based selection on SVD processed data.
 
-### How to set Tasks, Feature Selection and Models:
+## How to set Tasks, Feature Selection and Models:
 
 Visit `config.yaml` and follow these steps:
 
