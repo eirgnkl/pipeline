@@ -24,14 +24,10 @@ The dataset undergoes multiple feature selection techniques to reduce dimensiona
 
 ### How to set Tasks, Feature Selection and Models:
 
-'task' is specified in `config.yaml` under the `TASKS` key.
+Visit `config.yaml` and follow these steps:
 
-Feature selection is specified in `config.yaml` under the `featsel` key.
-
-model is specified in `config.yaml` under the `methods` key.
-
-1. `'task'` is specified in `config.yaml` under the `TASKS` key.
-2. Set correct paths to your RNA and MSI datasets in `input_rna` and `input_metabolomics`
+1. Set name of `'task'` in `config.yaml` under the `TASKS` key.
+2. Set correct paths to your RNA and MSI datasets in `input_rna` and `input_metabolomics.`
 3. Define the name of the `split `that you want to use for the task (this is used later in both feature selection and training thus it's set up in the `config.yaml`)
 4. Specify the `methods` (models) that you want to use to make predictions. For the parameter tuning keep reading.
 5. Select the different ways of preprocessing that you want your models to run with, under the `featsel` key.
@@ -59,10 +55,11 @@ The pipeline supports the following regression models:
 - **Linear Regression**: Standard least squares regression.
 - **XGBoost**: Gradient boosting for non-linear patterns.
 
+In case you want to add new models, be aware that the models is called through the `run_methods.py`, so make sure the structure of it is similar to the already existing scripts and define a `{new_methods}_param.tsv`, in the folder `params`
+
 ### Hyperparameters to Tune
 
 Each model has parameters that users can configure in `params/{method}_params.tsv`.
-
 
 ## Running the Pipeline
 
