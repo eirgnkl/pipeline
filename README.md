@@ -24,12 +24,30 @@ The dataset undergoes multiple feature selection techniques to reduce dimensiona
 
 ### How to set Tasks, Feature Selection and Models:
 
-Feature selection is specified in `cof.yaml` under the `featsel` key.
+'task' is specified in `config.yaml` under the `TASKS` key.
+
+Feature selection is specified in `config.yaml` under the `featsel` key.
+
+model is specified in `config.yaml` under the `methods` key.
 
 1. Name your TASK and set correct paths to your RNA and MSI datasets
 2. Define the name of the split that you want to use for the task (this is used later in both feature selection and training thus it's set up in the config.yaml)
-3. Specify the methods (models) that you want to use to make predictions. Set the parameter combination that each method is run with in the params/[method]_params.tsv.
+3. Specify the methods (models) that you want to use to make predictions. For the parameter tuning keep reading.
 4. Select the different ways of preprocessing that you want your models to run with.
+
+```
+TASKS:
+  'vitatrack':
+    input_rna: /lustre/groups/ml01/workspace/anastasia.litinetskaya/code/vitatrack/datasets/V11L12-038_A1.RNA_MOSCOT_paired_hvg.h5ad
+    input_metabolomics: /lustre/groups/ml01/workspace/anastasia.litinetskaya/code/vitatrack/datasets/V11L12-038_A1.MSI_MOSCOT_paired_hvg.h5ad
+    split: split
+    methods:
+      ridge:
+        params: params/ridge_params.tsv
+        featsel:
+          - hvg
+
+```
 
 ## Models Implemented
 
@@ -40,37 +58,10 @@ The pipeline supports the following regression models:
 - **Linear Regression**: Standard least squares regression.
 - **XGBoost**: Gradient boosting for non-linear patterns.
 
-### How to Select Model
+### Hyperparameters to Tune
 
-Specify the model in `config.yaml` under `model`.
+Each model has parameters that users can configure in `params/{method}_params.tsv`.
 
-Example:
-
-```yaml
-model: ridge
-```
-
----
-
-## Hyperparameters to Tune
-
-Each model has parameters that users can configure in `params.tsv`.
-
-### Ridge & Lasso
-
-```yaml
-alpha: 1.0  # Regularization strength
-```
-
-### XGBoost
-
-```yaml
-learning_rate: 0.1
-n_estimators: 100
-max_depth: 3
-```
-
----
 
 ## Running the Pipeline
 
@@ -83,7 +74,7 @@ snakemake --cores <num_cores> --profile profile_gpu
 For dry-run mode:
 
 ```bash
-snakemake -n
+snakemake --dry-run
 ```
 
 ---
@@ -102,7 +93,6 @@ data/reports/{TASK}/  # Best results for each task
 ```
 
 .
-
 
 **SuperSOS for completion**
 
