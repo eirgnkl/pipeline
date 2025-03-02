@@ -46,6 +46,14 @@ TASKS:
 
 ```
 
+## Warning: 
+
+If you change the preprocessing scripts for any reason, make sure to do **one of the two**:
+
+* Comment out lines that skip creating the dataset if they already find existing file in the path (lines 17-20)
+* Delete manually the previous datasets of your task. These are found in the directory `dataset/processed/{task}.`
+
+
 ## Models Implemented
 
 The pipeline supports the following regression models:
