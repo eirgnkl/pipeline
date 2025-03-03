@@ -22,6 +22,19 @@ The dataset undergoes multiple feature selection techniques to reduce dimensiona
 - **svd**: Singular value decomposition.
 - **svd+graph**: Graph-based selection on SVD processed data.
 
+You can tune the parameters for the feature selection scripts (e.g. number of top genes, number of components for svd, neighbours to take into account for graph etc.) in `scripts/feature_selection/tuning.tsv .`
+
+##### *Note:*
+
+The feature selection process is not dynamic. This means that if you run multiple tasks (which probably means different datasets), your feature selection process will be the same for all the tasks. If you wish to have different tuning params for the feature selection, I recommend running the pipleine for the different tasks seperately (so leave only task of interest uncommented in the config file) and setting the `tuning.tsv` separately for each task.
+
+#### !Warning!:
+
+If you change the feature selection scripts for any reason, make sure to do **one of the two**:
+
+* Comment out lines that skip creating the dataset if they already find existing file in the path (lines 17-20) in the `scripts/run_featsel.py`
+* Delete manually the already existing datasets of your task. These are found in the directory `dataset/processed/{task}.`
+
 ## How to set Tasks, Feature Selection and Models:
 
 Visit `config.yaml` and follow these steps:
@@ -45,14 +58,6 @@ TASKS:
           - hvg
 
 ```
-
-## Warning: 
-
-If you change the preprocessing scripts for any reason, make sure to do **one of the two**:
-
-* Comment out lines that skip creating the dataset if they already find existing file in the path (lines 17-20)
-* Delete manually the previous datasets of your task. These are found in the directory `dataset/processed/{task}.`
-
 
 ## Models Implemented
 
