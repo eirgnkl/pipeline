@@ -11,8 +11,6 @@ import os
 # Be careful, so far there is no dynamic selection for feature selection. You can specify your parameters, but not have multiple
 # versions of the same preprocessing method
 
-
-
 # Generate tasks DataFrame and load configuration
 os.makedirs("data", exist_ok=True)
 tasks_df = create_tasks_df('config.yaml', save='data/tasks.tsv')
@@ -52,10 +50,18 @@ rule all:
                method=tasks_df['method'].str.strip().tolist(),
                featsel=tasks_df['featsel'].str.strip().tolist(),
                hash=tasks_df['hash'].str.strip().tolist()),
-        # Merged and best results per unique task
+        #Merge for each task
         expand("data/reports/{task}/merged_results.tsv",
                task=[t.strip() for t in tasks_df['task'].unique()]),
-        expand("data/reports/{task}/best_results.tsv",
+        #Per model best RMSE and R2
+        expand("data/reports/{task}/best_results_per_model_rmse.tsv",
+               task=[t.strip() for t in tasks_df['task'].unique()]),
+        expand("data/reports/{task}/best_results_per_model_r2.tsv",
+               task=[t.strip() for t in tasks_df['task'].unique()]),
+        #Top 10 best
+        expand("data/reports/{task}/best_results_overall_rmse.tsv",
+               task=[t.strip() for t in tasks_df['task'].unique()]),
+        expand("data/reports/{task}/best_results_overall_r2.tsv",
                task=[t.strip() for t in tasks_df['task'].unique()])
 
 
@@ -109,19 +115,39 @@ rule find_best:
     input:
         tsv="data/reports/{task}/merged_results.tsv"
     output:
-        tsv="data/reports/{task}/best_results.tsv"
+        per_model_rmse="data/reports/{task}/best_results_per_model_rmse.tsv",
+        per_model_r2="data/reports/{task}/best_results_per_model_r2.tsv",
+        overall_rmse="data/reports/{task}/best_results_overall_rmse.tsv",
+        overall_r2="data/reports/{task}/best_results_overall_r2.tsv"
     run:
         import pandas as pd
         df = pd.read_csv(input.tsv, sep='\t')
-        best_rows = []
+        
+        # -- Per-model Best Selection --
+        per_model_rmse_rows = []
+        per_model_r2_rows = []
         grouped = df.groupby(['method_name', 'task'])
-
-        # Iterate through groups, find best rows
+        
         for (method_name, task), group in grouped:
-            for metric in ['rmse', 'r2', 'pearson', 'spearman']:
-                if metric in group.columns:
-                    best_row = group.loc[group[metric].idxmax() if metric != 'rmse' else group[metric].idxmin()]
-                    best_rows.append(best_row)
+            if 'rmse' in group.columns:
+                # For RMSE, lower values are better
+                best_row_rmse = group.loc[group['rmse'].idxmin()]
+                per_model_rmse_rows.append(best_row_rmse)
+            if 'r2' in group.columns:
+                # For R², higher values are better
+                best_row_r2 = group.loc[group['r2'].idxmax()]
+                per_model_r2_rows.append(best_row_r2)
+        
+        best_per_model_rmse_df = pd.DataFrame(per_model_rmse_rows).drop_duplicates()
+        best_per_model_r2_df = pd.DataFrame(per_model_r2_rows).drop_duplicates()
+        best_per_model_rmse_df = best_per_model_rmse_df.sort_values(by='rmse', ascending=True)
+        best_per_model_r2_df = best_per_model_r2_df.sort_values(by='r2', ascending=False)
 
-        best_results_df = pd.DataFrame(best_rows).drop_duplicates()
-        best_results_df.to_csv(output.tsv, sep='\t', index=False)
+        # -- Overall Top 10 Selection --
+        best_overall_rmse_df = df.sort_values(by='rmse', ascending=True).head(10)
+        best_overall_r2_df = df.sort_values(by='r2', ascending=False).head(10)
+        
+        best_per_model_rmse_df.to_csv(output.per_model_rmse, sep='\t', index=False)
+        best_per_model_r2_df.to_csv(output.per_model_r2, sep='\t', index=False)
+        best_overall_rmse_df.to_csv(output.overall_rmse, sep='\t', index=False)
+        best_overall_r2_df.to_csv(output.overall_r2, sep='\t', index=False)
