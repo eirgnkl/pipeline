@@ -1,8 +1,8 @@
-## 🐍Snakemake Pipeline for Metabolite Prediction from Gene Expression (with feature preprocessing)
+## 🐍 Snakemake Pipeline for Metabolite Prediction from Gene Expression (with feature preprocessing)
 
 This repository contains a Snakemake pipeline for predicting **metabolic distribution from gene expression data** using several **machine learning models** and **feature selection techniques**.
 
-## 🏗️Pipeline Structure
+## 🏗️ Pipeline Structure
 
 The pipeline is structured as follows:
 
@@ -10,7 +10,7 @@ The pipeline is structured as follows:
 2. **Model Training**: Runs Ridge, Lasso, Linear Regression, XGBoost and a CVAE.
 3. **Evaluation**: Assesses performance using 4 different metrics (RMSE, MAE, Pearson & Spearmann Correlation and $R^2$).
 
-## 🧪Feature Preprocessing
+## 🧪 Feature Preprocessing
 
 The dataset undergoes multiple feature selection techniques to reduce dimensionality and improve model performance. The available methods are:
 
@@ -33,7 +33,7 @@ If you change the feature selection scripts for any reason, make sure to do **on
 * Comment out lines that skip creating the dataset if they already find existing file in the path (lines 17-20) in the `scripts/run_featsel.py`
 * Delete manually the already existing datasets of your task. These are found in the directory `dataset/processed/{task}`
 
-## 🔧How to set Tasks, Feature Selection and Models:
+## 🔧 How to set Tasks, Feature Selection and Models:
 
 Visit `config.yaml` and follow these steps:
 
@@ -58,7 +58,7 @@ TASKS:
 
 ```
 
-## 📈Models Implemented
+## 📈 Models Implemented
 
 The pipeline supports the following regression models:
 
@@ -74,7 +74,7 @@ In case you want to add new models, be aware that the models is called through t
 
 Each model has parameters that users can configure in `params/{method}_params.tsv`.
 
-## 🏃Running the Pipeline
+## 🏃 Running the Pipeline
 
 To execute the pipeline, use:
 
@@ -104,7 +104,7 @@ After the pipeline completes, a **visualization step** generates comparative plo
 
 These plots help assess **which model with which parameters and feature selection techniques yield the best results** for each task.
 
-## Output
+## 🗂️ Output
 
 Results are stored in:
 
