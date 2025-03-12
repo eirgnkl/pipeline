@@ -10,7 +10,7 @@ The pipeline is structured as follows:
 
 1. **Feature Preprocessing**: Selects relevant features using different feature selection methods.
 2. **Model Training**: Runs Ridge, Lasso, Linear Regression, XGBoost and a CVAE.
-3. **Evaluation**: Assesses performance using 4 different metrics (RMSE, Pearson and Spearmann Correlation and $R^2$).
+3. **Evaluation**: Assesses performance using 4 different metrics (RMSE, MAE, Pearson and Spearmann Correlation and $R^2$).
 
 ## Feature Preprocessing
 
@@ -97,7 +97,7 @@ Be mindful to set profile_gpu/config.yaml to cluster needs
 
 ### Model Performance Visualization
 
-After the pipeline completes, a **visualization step** generates comparative plots for each task. These plots provide a clear view of model performance across different **feature selection techniques**.
+After the pipeline completes, a **visualization step** generates comparative plots for each task. These plots provide a clear view of model performance across different **feature selection techniques**. User sets in snakefile the **desired number of best models** to view and compare in the params `rule visualize`
 
 ### Visualization Includes:
 
