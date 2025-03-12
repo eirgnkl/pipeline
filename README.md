@@ -4,7 +4,7 @@
 This repository contains a Snakemake pipeline for predicting **metabolic distribution from gene expression data** using several **machine learning models** and **feature selection techniques**.
 
 
-## Pipeline Structure
+## 🏗️Pipeline Structure
 
 The pipeline is structured as follows:
 
@@ -12,7 +12,7 @@ The pipeline is structured as follows:
 2. **Model Training**: Runs Ridge, Lasso, Linear Regression, XGBoost and a CVAE.
 3. **Evaluation**: Assesses performance using 4 different metrics (RMSE, MAE, Pearson & Spearmann Correlation and $R^2$).
 
-## Feature Preprocessing
+## 🧪Feature Preprocessing
 
 The dataset undergoes multiple feature selection techniques to reduce dimensionality and improve model performance. The available methods are:
 
@@ -28,14 +28,14 @@ You can tune the parameters for the feature selection scripts (e.g. number of to
 
 The feature selection process is not dynamic. This means that if you run multiple tasks (which probably means different datasets), your feature selection process will be the same for all the tasks. If you wish to have different tuning params for the feature selection, I recommend running the pipleine for the different tasks seperately (so leave only task of interest uncommented in the config file) and setting the `tuning.tsv` separately for each task.
 
-#### !Warning!:
+#### ⚠️Warning:
 
 If you change the feature selection scripts for any reason, make sure to do **one of the two**:
 
 * Comment out lines that skip creating the dataset if they already find existing file in the path (lines 17-20) in the `scripts/run_featsel.py`
 * Delete manually the already existing datasets of your task. These are found in the directory `dataset/processed/{task}`
 
-## How to set Tasks, Feature Selection and Models:
+## 🔧How to set Tasks, Feature Selection and Models:
 
 Visit `config.yaml` and follow these steps:
 
@@ -60,7 +60,7 @@ TASKS:
 
 ```
 
-## Models Implemented
+## 📈Models Implemented
 
 The pipeline supports the following regression models:
 
@@ -90,10 +90,10 @@ For dry-run mode:
 snakemake --dry-run
 ```
 
-Be mindful to set profile_gpu/config.yaml to cluster needs
+Be mindful to set `profile_gpu/config.yaml` to cluster needs.
 
 
-## Visualization
+## 🌈Visualization
 
 ### Model Performance Visualization
 
