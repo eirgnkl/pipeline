@@ -4,6 +4,8 @@ from scripts.utils import create_tasks_df
 from pprint import pprint
 import numpy as np
 import os
+import time
+
 
 # Instructions for user:
 # 1. Make sure to select your parameters for the models in folder params by naming your file according to model_params.tsv
@@ -14,6 +16,7 @@ import os
 # Generate tasks DataFrame and load configuration
 os.makedirs("data", exist_ok=True)
 tasks_df = create_tasks_df('config.yaml', save='data/tasks.tsv')
+time.sleep(5)
 tasks_df = pd.read_csv('data/tasks.tsv', sep='\t')
 
 # Extract unique task details
@@ -62,7 +65,11 @@ rule all:
         expand("data/reports/{task}/best_results_overall_rmse.tsv",
                task=[t.strip() for t in tasks_df['task'].unique()]),
         expand("data/reports/{task}/best_results_overall_r2.tsv",
+               task=[t.strip() for t in tasks_df['task'].unique()]),
+        #Visualisation of metrics results
+        expand("data/reports/{task}/metrics_visualisation_{task}.png",
                task=[t.strip() for t in tasks_df['task'].unique()])
+
 
 
 rule feat_sel:
@@ -91,8 +98,7 @@ rule run_method:
     params:
         thisparam=lambda wildcards: tasks_df.loc[tasks_df['hash'] == wildcards.hash, :].iloc[0, :].to_dict()
     script:
-        'scripts/run_method.py'
-
+        "scripts/run_method.py"
 
 rule merge:
     input:
@@ -151,3 +157,13 @@ rule find_best:
         best_per_model_r2_df.to_csv(output.per_model_r2, sep='\t', index=False)
         best_overall_rmse_df.to_csv(output.overall_rmse, sep='\t', index=False)
         best_overall_r2_df.to_csv(output.overall_r2, sep='\t', index=False)
+
+rule visualize:
+    input:
+        merged_results="data/reports/{task}/merged_results.tsv"
+    output:
+        visualization="data/reports/{task}/metrics_visualisation_{task}.png"
+    params:
+        top_model=5  # Set the number of top models to display
+    script:
+        "scripts/metrics_visualization.py"
