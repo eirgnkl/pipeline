@@ -76,7 +76,7 @@ In case you want to add new models, be aware that the models is called through t
 
 Each model has parameters that users can configure in `params/{method}_params.tsv`.
 
-## Running the Pipeline
+## 🏃Running the Pipeline
 
 To execute the pipeline, use:
 
