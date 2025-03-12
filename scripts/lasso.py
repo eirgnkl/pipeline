@@ -3,6 +3,8 @@ import pandas as pd
 from sklearn.linear_model import Lasso
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score, root_mean_squared_error
+from sklearn.metrics import mean_absolute_error
+
 from scipy.stats import spearmanr, pearsonr
 import numpy as np
 
@@ -58,15 +60,16 @@ def run_lasso(
     rmse_test = root_mean_squared_error(Y_test, Y_pred)
     # r2_train = r2_score(matching_msi_train, msi_train_pred)
     r2_test = r2_score(Y_test, Y_pred)
+    mae_test = mean_absolute_error(Y_test, Y_pred)
 
     #Save results to a DataFrame
     metrics = pd.DataFrame({
         'rmse': [rmse_test],
+        'mae': [mae_test],
         'r2': [r2_test],
         'pearson': [pearson_corr],
         'spearman': [spearman_corr]
     })
-
     #Add this for interpretability later, check outputs of each model's preds
     predictions = pd.DataFrame({
         'y_true': Y_test.flatten(),

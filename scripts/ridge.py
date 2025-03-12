@@ -4,6 +4,8 @@ import scanpy as sc
 from sklearn.linear_model import Ridge
 from scipy.stats import pearsonr, spearmanr
 from sklearn.metrics import root_mean_squared_error, r2_score
+from sklearn.metrics import mean_absolute_error
+
 
 
 #maybe update pipeline to pass each parameter seperately for the actual function at some point
@@ -58,19 +60,19 @@ def run_ridge_reg(
     rmse_test = root_mean_squared_error(Y_test, Y_pred)
     # r2_train = r2_score(matching_msi_train, msi_train_pred)
     r2_test = r2_score(Y_test, Y_pred)
+    mae_test = mean_absolute_error(Y_test, Y_pred)
 
     #Save results to a DataFrame
     metrics = pd.DataFrame({
         'rmse': [rmse_test],
+        'mae': [mae_test],
         'r2': [r2_test],
         'pearson': [pearson_corr],
         'spearman': [spearman_corr]
     })
-
     #Add this for interpretability later, check outputs of each model's preds
     predictions = pd.DataFrame({
         'y_true': Y_test.flatten(),
         'y_pred': Y_pred.flatten()
-    })
-
+    })  
     return metrics, predictions

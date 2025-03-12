@@ -5,6 +5,8 @@ import cupy as cp  # For GPU array conversion
 from xgboost import XGBRegressor
 from scipy.stats import pearsonr, spearmanr
 from sklearn.metrics import root_mean_squared_error, r2_score  # Using MSE then taking sqrt
+from sklearn.metrics import mean_absolute_error
+
 from scipy.sparse import issparse
 
 
@@ -134,10 +136,12 @@ def run_xgboost(
     # Compute Root Mean Squared Error and R2 score
     rmse_test = root_mean_squared_error(Y_test_cpu, Y_pred)
     r2_test = r2_score(Y_test_cpu, Y_pred)
+    mae_test = mean_absolute_error(Y_test_cpu, Y_pred)
 
     #Save results to a DataFrame
     metrics = pd.DataFrame({
         'rmse': [rmse_test],
+        'mae': [mae_test],
         'r2': [r2_test],
         'pearson': [pearson_corr],
         'spearman': [spearman_corr]

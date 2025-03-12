@@ -7,6 +7,7 @@ import torch.optim as optim
 from sklearn.metrics import r2_score, mean_squared_error
 from scipy.stats import pearsonr, spearmanr
 from scipy.sparse import issparse
+from sklearn.metrics import mean_absolute_error
 
 def convert_to_tensor(X):
     # If X is sparse, convert to dense
@@ -156,11 +157,12 @@ def run_cvae(adata_rna_train,
         spearman_corr = spearmanr(Y_pred.flatten(), Y_test_np.flatten())[0]
         rmse_test = np.sqrt(mean_squared_error(Y_test_np, Y_pred))
         r2_test = r2_score(Y_test_np, Y_pred)
-
+        mae_test = mean_absolute_error(Y_test_np, Y_pred)
 
         #Save results to a DataFrame
         metrics = pd.DataFrame({
             'rmse': [rmse_test],
+            'mae': [mae_test],
             'r2': [r2_test],
             'pearson': [pearson_corr],
             'spearman': [spearman_corr]
@@ -173,4 +175,3 @@ def run_cvae(adata_rna_train,
         })
 
     return metrics, predictions
-

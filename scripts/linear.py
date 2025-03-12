@@ -2,6 +2,8 @@ import pandas as pd
 import scanpy as sc
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score, root_mean_squared_error
+from sklearn.metrics import mean_absolute_error
+
 from scipy.stats import spearmanr, pearsonr
 import numpy as np
 from scipy.sparse import issparse
@@ -65,14 +67,17 @@ def run_linreg(
     #MSE and R2
     rmse_test = root_mean_squared_error(Y_test, Y_pred)
     r2_test = r2_score(Y_test, Y_pred)
+    mae_test = mean_absolute_error(Y_test, Y_pred)
 
     #Save results to a DataFrame
     metrics = pd.DataFrame({
         'rmse': [rmse_test],
+        'mae': [mae_test],
         'r2': [r2_test],
         'pearson': [pearson_corr],
         'spearman': [spearman_corr]
     })
+
 
     #Add this for interpretability later, check outputs of each model's preds
     predictions = pd.DataFrame({
