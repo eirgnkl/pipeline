@@ -1,10 +1,9 @@
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
-from snakemake import snakemake
 
-# Retrieve parameters from Snakemake
-num_top_models = snakemake.params.top_model  # Number of top models to display
+# Retrieve parameters from Snakemak
+num_top_models = int(snakemake.params.top_model)  # Ensure it's an integer
 selected_task = snakemake.wildcards.task  # Task name
 
 # Define paths
