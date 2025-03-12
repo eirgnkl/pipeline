@@ -1,8 +1,6 @@
-
-## Pipeline for Metabolite Prediction from Gene Expression (with feature preprocessing)
+## 🐍Snakemake Pipeline for Metabolite Prediction from Gene Expression (with feature preprocessing)
 
 This repository contains a Snakemake pipeline for predicting **metabolic distribution from gene expression data** using several **machine learning models** and **feature selection techniques**.
-
 
 ## 🏗️Pipeline Structure
 
@@ -91,7 +89,6 @@ snakemake --dry-run
 ```
 
 Be mindful to set `profile_gpu/config.yaml` to cluster needs.
-
 
 ## 🌈Visualization
 
