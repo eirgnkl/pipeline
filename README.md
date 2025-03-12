@@ -22,7 +22,7 @@ The dataset undergoes multiple feature selection techniques to reduce dimensiona
 - **svd**: Singular value decomposition.
 - **svd+graph**: Graph-based selection on SVD processed data.
 
-You can tune the parameters for the feature selection scripts (e.g. number of top genes, number of components for svd, neighbours to take into account for graph etc.) in `scripts/feature_selection/tuning.tsv .`
+You can tune the parameters for the feature selection scripts (e.g. number of top genes, number of components for svd, neighbours to take into account for graph etc.) in `scripts/feature_selection/tuning.tsv`
 
 ##### *Note:*
 
@@ -33,7 +33,7 @@ The feature selection process is not dynamic. This means that if you run multipl
 If you change the feature selection scripts for any reason, make sure to do **one of the two**:
 
 * Comment out lines that skip creating the dataset if they already find existing file in the path (lines 17-20) in the `scripts/run_featsel.py`
-* Delete manually the already existing datasets of your task. These are found in the directory `dataset/processed/{task}.`
+* Delete manually the already existing datasets of your task. These are found in the directory `dataset/processed/{task}`
 
 ## How to set Tasks, Feature Selection and Models:
 
@@ -123,23 +123,6 @@ data/reports/{TASK}/
   │   ├── accuracy.tsv  # Model performance metrics
   │   ├── predictions.tsv  # Predicted metabolites
 ```
-
-
-**SuperSOS for completion**
-
-Alignment preprocessing notebook? Check with maiia
-
-**Necessary checks to do:**
-
-* Functionality with Additional visualization
-* Some elements of the environment (anndata and scanpy or something else?) contradict one another, for my pc works but for new installations need to check
-
-**Possible additions to be made:**
-
-* VAE preprocessing with scvi
-* New models for predictions (GNN, VAE, other)
-* Preprocess MSI data
-* 
 
 *Alternative to using profile_gpu:*
 
