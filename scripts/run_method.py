@@ -4,6 +4,7 @@
 import scanpy as sc # type: ignore
 import pandas as pd # type: ignore
 import ast
+import os
 
 
 # Import all method scripts
@@ -24,12 +25,18 @@ METHOD_MAP = {
     'cvae': dict(function=run_cvae, mode='paired')
 }
 
+
+
 # Load parameters from Snakemake
 params = snakemake.params.thisparam 
 input_rna_train = snakemake.input.rna_ds_train
 input_rna_test = snakemake.input.rna_ds_test
 input_msi_train = snakemake.input.msi_ds_train
 input_msi_test = snakemake.input.msi_ds_test
+
+if all(os.path.exists(f) for f in snakemake.output):
+    print(f"Skipping {snakemake.wildcards.task} - {snakemake.wildcards.method}, results already exist")
+    exit(0)
 
 # Task parameters
 method = params['method']
