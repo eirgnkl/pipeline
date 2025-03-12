@@ -16,8 +16,8 @@ def process(adata_rna, adata_msi, output_rna_train, output_rna_test, output_msi_
     adata_msi.obs_names_make_unique()
 
     #Split into train test
-    rna_train = adata_rna[adata_rna.obs[split_name] == "train"]
-    rna_test = adata_rna[adata_rna.obs[split_name] == "test"]
+    rna_train = adata_rna[adata_rna.obs[split_name] == "train"].copy()
+    rna_test = adata_rna[adata_rna.obs[split_name] == "test"].copy()
 
     #----------------------------------------------sc-seqRNA----------------------------------------------#
     #-----SVD-----#
@@ -69,8 +69,8 @@ def process(adata_rna, adata_msi, output_rna_train, output_rna_test, output_msi_
 
     #----------------------------------------------MSI----------------------------------------------#
     #-----no process-----#
-    msi_train = adata_msi[adata_msi.obs[split_name] == "train"]
-    msi_test = adata_msi[adata_msi.obs[split_name] == "test"]
+    msi_train = adata_msi[adata_msi.obs[split_name] == "train"].copy()
+    msi_test = adata_msi[adata_msi.obs[split_name] == "test"].copy()
 
     #----------------------------------------------SAVE----------------------------------------------#
     rna_train.write(output_rna_train)
