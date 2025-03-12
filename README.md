@@ -105,7 +105,7 @@ After the pipeline completes, a **visualization step** generates comparative plo
 - 🎯 **Feature selection methods displayed inside bars** instead of model parameters.
 - ⭐ **Best-performing models highlighted** for each metric.
 
-These plots help assess **which feature selection techniques yield the best results** for each model.
+These plots help assess **which model with which parameters and feature selection techniques yield the best results** for each task.
 
 ## Output
 
@@ -117,7 +117,7 @@ data/reports/{TASK}/
   ├── best_results_per_model_rmse.tsv  #Best RMSE values per model
   ├── best_results_per_model_r2.tsv  #Best R² values per model
   ├── best_results_overall_rmse.tsv  #Top 10 models ranked by RMSE
-  ├── best_results_overall_r2.tsv  #Top 10 models ranked by $R^2$
+  ├── best_results_overall_r2.tsv  #Top 10 models ranked by R²
   ├── metrics_visualisation_{TASK}.png  # Performance visualization per task
   ├── {model}/{feature_selection}/  # Model-specific results
   │   ├── accuracy.tsv  # Model performance metrics
