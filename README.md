@@ -1,8 +1,8 @@
-## Pipeline for Metabolite Prediction from Gene Expression
+
+## Pipeline for Metabolite Prediction from Gene Expression (with feature preprocessing)
 
 This repository contains a Snakemake pipeline for predicting **metabolic distribution from gene expression data** using several **machine learning models** and **feature selection techniques**.
 
-The goal is to evaluate whether **consecutive slides** can perform as well as **same-slide** data in predicting metabolites.
 
 ## Pipeline Structure
 
@@ -48,14 +48,15 @@ Visit `config.yaml` and follow these steps:
 ```
 TASKS:
   'vitatrack':
-    input_rna: /lustre/groups/ml01/workspace/anastasia.litinetskaya/code/vitatrack/datasets/V11L12-038_A1.RNA_MOSCOT_paired_hvg.h5ad
-    input_metabolomics: /lustre/groups/ml01/workspace/anastasia.litinetskaya/code/vitatrack/datasets/V11L12-038_A1.MSI_MOSCOT_paired_hvg.h5ad
+    input_rna: /path_to_rna/rna_file.h5ad
+    input_metabolomics: /path_to_msi/msi_file.h5ad
     split: split
     methods:
       ridge:
         params: params/ridge_params.tsv
         featsel:
           - hvg
+          - hvg_svd
 
 ```
 
@@ -66,6 +67,7 @@ The pipeline supports the following regression models:
 - **Ridge Regression**: Handles multicollinearity by adding an L2 penalty.
 - **Lasso Regression**: Adds an L1 penalty for feature selection.
 - **Linear Regression**: Standard least squares regression.
+- **Elastic Net**: Apply both types of penalties, L1 and L2
 - **XGBoost**: Gradient boosting for non-linear patterns.
 
 In case you want to add new models, be aware that the models is called through the `run_methods.py`, so make sure the structure of it is similar to the already existing scripts and define a `{new_methods}_param.tsv`, in the folder `params`
@@ -88,22 +90,40 @@ For dry-run mode:
 snakemake --dry-run
 ```
 
----
+Be mindful to set profile_gpu/config.yaml to cluster needs
+
+
+## Visualization
+
+### Model Performance Visualization
+
+After the pipeline completes, a **visualization step** generates comparative plots for each task. These plots provide a clear view of model performance across different **feature selection techniques**.
+
+### Visualization Includes:
+
+- 📊 **Bar charts** showing model performance for each metric (**RMSE, Pearson, Spearman, R²**).
+- 🎯 **Feature selection methods displayed inside bars** instead of model parameters.
+- ⭐ **Best-performing models highlighted** for each metric.
+
+These plots help assess **which feature selection techniques yield the best results** for each model.
 
 ## Output
 
 Results are stored in:
 
 ```
-data/reports/{TASK}/  # Best results for each task
-  ├── best_results.tsv  # Summary of best-performing models
+data/reports/{TASK}/
+  ├── merged_results.tsv  # Merged accuracy results for all models
+  ├── best_results_per_model_rmse.tsv  #Best RMSE values per model
+  ├── best_results_per_model_r2.tsv  #Best R² values per model
+  ├── best_results_overall_rmse.tsv  #Top 10 models ranked by RMSE
+  ├── best_results_overall_r2.tsv  #Top 10 models ranked by $R^2$
+  ├── metrics_visualisation_{TASK}.png  # Performance visualization per task
   ├── {model}/{feature_selection}/  # Model-specific results
   │   ├── accuracy.tsv  # Model performance metrics
   │   ├── predictions.tsv  # Predicted metabolites
-
 ```
 
-.
 
 **SuperSOS for completion**
 
@@ -111,8 +131,6 @@ Alignment preprocessing notebook? Check with maiia
 
 **Necessary checks to do:**
 
-* Functionality of pipeline with 1) all tasks 2) each task alone
-* Functionality of pipeline with elastic net and new extra models
 * Functionality with Additional visualization
 * Some elements of the environment (anndata and scanpy or something else?) contradict one another, for my pc works but for new installations need to check
 
@@ -120,6 +138,8 @@ Alignment preprocessing notebook? Check with maiia
 
 * VAE preprocessing with scvi
 * New models for predictions (GNN, VAE, other)
+* Preprocess MSI data
+* 
 
 *Alternative to using profile_gpu:*
 
