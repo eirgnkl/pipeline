@@ -3,15 +3,24 @@
 cluster: 
   mkdir -p logs/{rule} && sbatch --partition={resources.partition} --gres=gpu:{resources.gpu} --mem={resources.mem_mb} --qos={resources.qos} --time={resources.time} --job-name=smk-{rule}-{wildcards} --output=logs/{rule}/%j-{rule}-{wildcards}.out --error=logs/{rule}/%j-{rule}-{wildcards}.err --nice=10000 --exclude=supergpu05,supergpu08,supergpu07,supergpu02,supergpu03 --parsable
 
+# default-resources:
+#   - partition=gpu_p
+#   - gpu=1
+#   - qos=gpu_priority
+#   - mem_mb=32000
+#   - disk_mb=40000
+#   - time='00:50:00'
+
 default-resources:
   - partition=gpu_p
   - gpu=1
-  - qos=gpu_normal
+  - qos=gpu_priority
   - mem_mb=32000
   - disk_mb=40000
-  - time='2:00:00'
+  - time='02:00:00'
 
-jobs: 16 #fix according to qos, 16 for gpu_normal, 8 for gpu_long, 2 for gpu_priority but every job is fast
+jobs: 2
+# jobs: 2 #fix according to qos, 16 for gpu_normal, 8 for gpu_long, 2 for gpu_priority [useful when congested cluster] but every job is fast
 keep-going: True
 keep-incomplete: True
 printshellcmds: True
