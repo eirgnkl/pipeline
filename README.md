@@ -55,7 +55,6 @@ TASKS:
         featsel:
           - hvg
           - hvg_svd
-
 ```
 
 ## 📈 Models Implemented
