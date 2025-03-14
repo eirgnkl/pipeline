@@ -48,8 +48,16 @@ featsel_map = {
 
 def get_method_label(method_name, featsel, method_params):
     """
-    Returns a string label for the x-axis in the form:
-    methodName_paramKey1=val1_paramKey2=val2_..._featselShort
+    Returns a multi-line label for the x-axis in the form:
+    
+      method_name
+      key1=val1
+      key2=val2
+      ...
+      featsel_short
+    
+    If no method_params are provided, the label consists of just the method_name
+    on the first line and the shortened featsel on the second line.
     """
     # Use the short featsel for the x-axis label
     featsel_short = featsel_map.get(featsel, featsel)
@@ -57,12 +65,16 @@ def get_method_label(method_name, featsel, method_params):
     # Convert method_params from string to dict if needed
     if isinstance(method_params, str):
         method_params = eval(method_params)
+        
     if not method_params or not isinstance(method_params, dict):
-        return f"{method_name}_{featsel_short}"
+        return f"{method_name}\n{featsel_short}"
     
-    # Join parameters as key=value pairs
-    param_str = "_".join(f"{k}={v}" for k, v in method_params.items())
-    return f"{method_name}_{param_str}_{featsel_short}"
+    # Create a list of parameter strings and join them with newline characters
+    param_parts = [f"{k}={v}" for k, v in method_params.items()]
+    param_str = "\n".join(param_parts)
+    
+    # Return the multi-line label
+    return f"{method_name}\n{param_str}\n{featsel_short}"
 
 # Prepare a list of columns to select
 columns_to_select = ['method_name', 'featsel']
