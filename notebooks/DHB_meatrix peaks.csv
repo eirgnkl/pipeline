@@ -1,0 +1,9 @@
+Mode,m/z Value,Tolerance (±0.1 m/z),Description
+Positive,137.0238,136.9238 - 137.1238,[DHB + H - H₂O]+ (Dehydration fragment)
+Positive,155.0341,154.9341 - 155.1341,[DHB + H]+ (Protonated DHB)
+Positive,177.0173,176.9173 - 177.1173,[DHB + Na]+ (Sodium-adduct)
+Positive,193.0351,192.9351 - 193.1351,[DHB + K]+ (Potassium-adduct)
+Positive,273.0454,272.9454 - 273.1454,[2DHB - 2H₂O + H]+ (Dehydrated DHB dimer)
+Negative,153.0192,152.9192 - 153.1192,[DHB - H]- (Deprotonated DHB)
+Negative,109.028,108.9280 - 109.1280,[DHB - H - CO₂]- (Decarboxylation fragment)
+Negative,307.04,306.9400 - 307.1400,[2DHB - H]- (DHB dimer anion)
