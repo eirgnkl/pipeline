@@ -20,22 +20,10 @@ df = pd.read_csv(file_path, sep='\t')
 
 # Define metrics and their optimization direction
 metrics = ['r2', 'mae', 'rmse', 'pearson', 'spearman']
-best_direction = {
-    'r2': 'max',
-    'mae': 'min',
-    'rmse': 'min',
-    'pearson': 'max',
-    'spearman': 'max'
-}
-highlight_colors = {
-    'r2': 'steelblue',
-    'mae': 'forestgreen',
-    'rmse': 'darkorange',
-    'pearson': 'purple',
-    'spearman': 'red'
-}
+best_direction = {'r2': 'max', 'mae': 'min', 'rmse': 'min', 'pearson': 'max', 'spearman': 'max'}
+highlight_colors = {'r2': 'steelblue', 'mae': 'forestgreen', 'rmse': 'darkorange', 'pearson': 'purple', 'spearman': 'red'}
 default_color = 'lightgray'
-text_color = 'white'  # Text color inside bars
+text_color = 'white'
 
 # Mapping featsel to a short label for the x-axis
 featsel_map = {
