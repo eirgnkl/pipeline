@@ -57,8 +57,9 @@ def get_method_label(method_name, featsel, method_params):
     if not method_params or not isinstance(method_params, dict):
         return f"{method_name}\n{featsel_short}"
     
-    # Create a list of parameter strings and join them with newline characters
+    # Create a list of parameter strings and keep only the first two pairs
     param_parts = [f"{k}={v}" for k, v in method_params.items()]
+    param_parts = param_parts[:2]
     param_str = "\n".join(param_parts)
     
     # Return the multi-line label
