@@ -264,10 +264,222 @@ TASKS:
   #         - hvg_svd_graph
   #         - svd
   #         - svd_graph
-  'lipids_top20_spatvar':
-    input_rna: /lustre/groups/ml01/workspace/anastasia.litinetskaya/code/vitatrack/datasets/RNA_concat_lipids.h5ad
-    input_metabolomics: /lustre/groups/ml01/workspace/eirini.giannakoulia/hand_prep/MSI_concat_lipids_top20spatvar.h5ad
-    split: half_split
+  # 'lipids_top20_spatvar':
+  #   input_rna: /lustre/groups/ml01/workspace/anastasia.litinetskaya/code/vitatrack/datasets/RNA_concat_lipids.h5ad
+  #   input_metabolomics: /lustre/groups/ml01/workspace/eirini.giannakoulia/hand_prep/MSI_concat_lipids_top20spatvar.h5ad
+  #   split: half_split
+  #   methods:
+  #     ridge:
+  #       params: params/ridge_params.tsv
+  #       featsel:
+  #         - hvg
+  #         - hvg_svd
+  #         - hvg_svd_graph
+  #         - svd
+  #         - svd_graph
+  #     lasso:
+  #       params: params/lasso_params.tsv
+  #       featsel:
+  #         - hvg
+  #         - hvg_svd
+  #         - hvg_svd_graph
+  #         - svd
+  #         - svd_graph
+  #     linear:
+  #       params: params/linreg_params.tsv
+  #       featsel:
+  #         - hvg
+  #         - hvg_svd
+  #         - hvg_svd_graph
+  #         - svd
+  #         - svd_graph
+  #     elastic_net:
+  #       params: params/elastic_net_params.tsv
+  #       featsel:
+  #         - hvg
+  #         - hvg_svd
+  #         - hvg_svd_graph
+  #         - svd
+  #         - svd_graph
+  #     xgboost:
+  #       params: params/xgboost_params.tsv
+  #       featsel:
+  #         - hvg
+  #         - hvg_svd
+  #         - hvg_svd_graph
+  #         - svd
+  #         - svd_graph
+  #     cvae:
+  #       params: params/cvae_params.tsv
+  #       featsel:
+  #         - hvg
+  #         - hvg_svd
+  #         - hvg_svd_graph
+  #         - svd
+  #         - svd_graph
+  # 'lipids_top10_spatvar':
+  #   input_rna: /lustre/groups/ml01/workspace/anastasia.litinetskaya/code/vitatrack/datasets/RNA_concat_lipids.h5ad
+  #   input_metabolomics: /lustre/groups/ml01/workspace/eirini.giannakoulia/hand_prep/MSI_concat_lipids_top10spatvar.h5ad
+  #   split: half_split
+  #   methods:
+  #     ridge:
+  #       params: params/ridge_params.tsv
+  #       featsel:
+  #         - hvg
+  #         - hvg_svd
+  #         - hvg_svd_graph
+  #         - svd
+  #         - svd_graph
+  #     lasso:
+  #       params: params/lasso_params.tsv
+  #       featsel:
+  #         - hvg
+  #         - hvg_svd
+  #         - hvg_svd_graph
+  #         - svd
+  #         - svd_graph
+  #     linear:
+  #       params: params/linreg_params.tsv
+  #       featsel:
+  #         - hvg
+  #         - hvg_svd
+  #         - hvg_svd_graph
+  #         - svd
+  #         - svd_graph
+  #     elastic_net:
+  #       params: params/elastic_net_params.tsv
+  #       featsel:
+  #         - hvg
+  #         - hvg_svd
+  #         - hvg_svd_graph
+  #         - svd
+  #         - svd_graph
+  #     xgboost:
+  #       params: params/xgboost_params.tsv
+  #       featsel:
+  #         - hvg
+  #         - hvg_svd
+  #         - hvg_svd_graph
+  #         - svd
+  #         - svd_graph
+  #     cvae:
+  #       params: params/cvae_params.tsv
+  #       featsel:
+  #         - hvg
+  #         - hvg_svd
+  #         - hvg_svd_graph
+  #         - svd
+  #         - svd_graph
+  # 'neuro_top20_spatvar':
+  #   input_rna: /lustre/groups/ml01/workspace/anastasia.litinetskaya/code/vitatrack/datasets/RNA_concat_neurotransmitters.h5ad
+  #   input_metabolomics: /lustre/groups/ml01/workspace/eirini.giannakoulia/hand_prep/MSI_concat_neurotransmitters_top20spatvar.h5ad
+  #   split: half_split
+  #   methods:
+  #     ridge:
+  #       params: params/ridge_params.tsv
+  #       featsel:
+  #         - hvg
+  #         - hvg_svd
+  #         - hvg_svd_graph
+  #         - svd
+  #         - svd_graph
+  #     lasso:
+  #       params: params/lasso_params.tsv
+  #       featsel:
+  #         - hvg
+  #         - hvg_svd
+  #         - hvg_svd_graph
+  #         - svd
+  #         - svd_graph
+  #     linear:
+  #       params: params/linreg_params.tsv
+  #       featsel:
+  #         - hvg
+  #         - hvg_svd
+  #         - hvg_svd_graph
+  #         - svd
+  #         - svd_graph
+  #     elastic_net:
+  #       params: params/elastic_net_params.tsv
+  #       featsel:
+  #         - hvg
+  #         - hvg_svd
+  #         - hvg_svd_graph
+  #         - svd
+  #         - svd_graph
+  #     xgboost:
+  #       params: params/xgboost_params.tsv
+  #       featsel:
+  #         - hvg
+  #         - hvg_svd
+  #         - hvg_svd_graph
+  #         - svd
+  #         - svd_graph
+  #     cvae:
+  #       params: params/cvae_params.tsv
+  #       featsel:
+  #         - hvg
+  #         - hvg_svd
+  #         - hvg_svd_graph
+  #         - svd
+  #         - svd_graph
+  # 'neuro_top10_spatvar':
+  #   input_rna: /lustre/groups/ml01/workspace/anastasia.litinetskaya/code/vitatrack/datasets/RNA_concat_neurotransmitters.h5ad
+  #   input_metabolomics: /lustre/groups/ml01/workspace/eirini.giannakoulia/hand_prep/MSI_concat_neurotransmitters_top10spatvar.h5ad
+  #   split: half_split
+  #   methods:
+  #     ridge:
+  #       params: params/ridge_params.tsv
+  #       featsel:
+  #         - hvg
+  #         - hvg_svd
+  #         - hvg_svd_graph
+  #         - svd
+  #         - svd_graph
+  #     lasso:
+  #       params: params/lasso_params.tsv
+  #       featsel:
+  #         - hvg
+  #         - hvg_svd
+  #         - hvg_svd_graph
+  #         - svd
+  #         - svd_graph
+  #     linear:
+  #       params: params/linreg_params.tsv
+  #       featsel:
+  #         - hvg
+  #         - hvg_svd
+  #         - hvg_svd_graph
+  #         - svd
+  #         - svd_graph
+  #     elastic_net:
+  #       params: params/elastic_net_params.tsv
+  #       featsel:
+  #         - hvg
+  #         - hvg_svd
+  #         - hvg_svd_graph
+  #         - svd
+  #         - svd_graph
+  #     xgboost:
+  #       params: params/xgboost_params.tsv
+  #       featsel:
+  #         - hvg
+  #         - hvg_svd
+  #         - hvg_svd_graph
+  #         - svd
+  #         - svd_graph
+  #     cvae:
+  #       params: params/cvae_params.tsv
+  #       featsel:
+  #         - hvg
+  #         - hvg_svd
+  #         - hvg_svd_graph
+  #         - svd
+  #         - svd_graph
+  'V11L12-038_A1_MOSCOT_paired_hvg_top10_spatvar':
+    input_rna: /lustre/groups/ml01/workspace/anastasia.litinetskaya/code/vitatrack/datasets/V11L12-038_A1.RNA_MOSCOT_paired_hvg.h5ad
+    input_metabolomics: /lustre/groups/ml01/workspace/eirini.giannakoulia/hand_prep/V11L12-038_A1.MSI_MOSCOT_paired_hvg_top10spatvar.h5ad
+    split: split
     methods:
       ridge:
         params: params/ridge_params.tsv
@@ -317,116 +529,10 @@ TASKS:
           - hvg_svd_graph
           - svd
           - svd_graph
-  'lipids_top10_spatvar':
-    input_rna: /lustre/groups/ml01/workspace/anastasia.litinetskaya/code/vitatrack/datasets/RNA_concat_lipids.h5ad
-    input_metabolomics: /lustre/groups/ml01/workspace/eirini.giannakoulia/hand_prep/MSI_concat_lipids_top10spatvar.h5ad
-    split: half_split
-    methods:
-      ridge:
-        params: params/ridge_params.tsv
-        featsel:
-          - hvg
-          - hvg_svd
-          - hvg_svd_graph
-          - svd
-          - svd_graph
-      lasso:
-        params: params/lasso_params.tsv
-        featsel:
-          - hvg
-          - hvg_svd
-          - hvg_svd_graph
-          - svd
-          - svd_graph
-      linear:
-        params: params/linreg_params.tsv
-        featsel:
-          - hvg
-          - hvg_svd
-          - hvg_svd_graph
-          - svd
-          - svd_graph
-      elastic_net:
-        params: params/elastic_net_params.tsv
-        featsel:
-          - hvg
-          - hvg_svd
-          - hvg_svd_graph
-          - svd
-          - svd_graph
-      xgboost:
-        params: params/xgboost_params.tsv
-        featsel:
-          - hvg
-          - hvg_svd
-          - hvg_svd_graph
-          - svd
-          - svd_graph
-      cvae:
-        params: params/cvae_params.tsv
-        featsel:
-          - hvg
-          - hvg_svd
-          - hvg_svd_graph
-          - svd
-          - svd_graph
-  'neuro_top20_spatvar':
-    input_rna: /lustre/groups/ml01/workspace/anastasia.litinetskaya/code/vitatrack/datasets/RNA_concat_neurotransmitters.h5ad
-    input_metabolomics: /lustre/groups/ml01/workspace/eirini.giannakoulia/hand_prep/MSI_concat_neurotransmitters_top20spatvar.h5ad
-    split: half_split
-    methods:
-      ridge:
-        params: params/ridge_params.tsv
-        featsel:
-          - hvg
-          - hvg_svd
-          - hvg_svd_graph
-          - svd
-          - svd_graph
-      lasso:
-        params: params/lasso_params.tsv
-        featsel:
-          - hvg
-          - hvg_svd
-          - hvg_svd_graph
-          - svd
-          - svd_graph
-      linear:
-        params: params/linreg_params.tsv
-        featsel:
-          - hvg
-          - hvg_svd
-          - hvg_svd_graph
-          - svd
-          - svd_graph
-      elastic_net:
-        params: params/elastic_net_params.tsv
-        featsel:
-          - hvg
-          - hvg_svd
-          - hvg_svd_graph
-          - svd
-          - svd_graph
-      xgboost:
-        params: params/xgboost_params.tsv
-        featsel:
-          - hvg
-          - hvg_svd
-          - hvg_svd_graph
-          - svd
-          - svd_graph
-      cvae:
-        params: params/cvae_params.tsv
-        featsel:
-          - hvg
-          - hvg_svd
-          - hvg_svd_graph
-          - svd
-          - svd_graph
-  'neuro_top10_spatvar':
-    input_rna: /lustre/groups/ml01/workspace/anastasia.litinetskaya/code/vitatrack/datasets/RNA_concat_neurotransmitters.h5ad
-    input_metabolomics: /lustre/groups/ml01/workspace/eirini.giannakoulia/hand_prep/MSI_concat_neurotransmitters_top10spatvar.h5ad
-    split: half_split
+  'V11L12-038_A1_MOSCOT_paired_hvg_top20_spatvar':
+    input_rna: /lustre/groups/ml01/workspace/anastasia.litinetskaya/code/vitatrack/datasets/V11L12-038_A1.RNA_MOSCOT_paired_hvg.h5ad
+    input_metabolomics: /lustre/groups/ml01/workspace/eirini.giannakoulia/hand_prep/V11L12-038_A1.MSI_MOSCOT_paired_hvg_top10spatvar.h5ad
+    split: split
     methods:
       ridge:
         params: params/ridge_params.tsv
