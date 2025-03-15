@@ -531,7 +531,7 @@ TASKS:
           - svd_graph
   'V11L12-038_A1_MOSCOT_paired_hvg_top20_spatvar':
     input_rna: /lustre/groups/ml01/workspace/anastasia.litinetskaya/code/vitatrack/datasets/V11L12-038_A1.RNA_MOSCOT_paired_hvg.h5ad
-    input_metabolomics: /lustre/groups/ml01/workspace/eirini.giannakoulia/hand_prep/V11L12-038_A1.MSI_MOSCOT_paired_hvg_top10spatvar.h5ad
+    input_metabolomics: /lustre/groups/ml01/workspace/eirini.giannakoulia/hand_prep/V11L12-038_A1.MSI_MOSCOT_paired_hvg_top20spatvar.h5ad
     split: split
     methods:
       ridge:
