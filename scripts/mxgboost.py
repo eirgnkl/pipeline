@@ -8,6 +8,8 @@ from sklearn.metrics import root_mean_squared_error, r2_score  # Using MSE then 
 from sklearn.metrics import mean_absolute_error
 
 from scipy.sparse import issparse
+# Set seed for NumPy
+np.random.seed(666)
 
 
 def ensure_gpu(data):
