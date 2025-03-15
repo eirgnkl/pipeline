@@ -13,7 +13,7 @@ from lasso import run_lasso
 from mxgboost import run_xgboost
 from elastic_net import run_elastic_net
 from cvae import run_cvae
-from gnn import run_gnn
+# from gnn import run_gnn
 
 # Dictionary mapping method names to their functions - connect config->smk->run_methods->function.py 
 METHOD_MAP = {
@@ -22,8 +22,8 @@ METHOD_MAP = {
     'linear': dict(function=run_linreg, mode='paired'),
     'xgboost': dict(function=run_xgboost, mode='paired'),
     'elastic_net': dict(function=run_elastic_net, mode='paired'),
-    'cvae': dict(function=run_cvae, mode='paired'),
-    'gnn': dict(function=run_gnn, mode='paired')
+    'cvae': dict(function=run_cvae, mode='paired')
+    # 'gnn': dict(function=run_gnn, mode='paired')
 
 }
 
