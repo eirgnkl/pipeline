@@ -1007,7 +1007,7 @@ TASKS:
       #     - svd
       #     - svd_graph
       gnn:
-        params: params/cvae_params.tsv
+        params: params/gnn_params.tsv
         featsel:
           - hvg
           - hvg_svd
