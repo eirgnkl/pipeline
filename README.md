@@ -7,7 +7,7 @@ This repository contains a Snakemake pipeline for predicting **metabolic distrib
 The pipeline is structured as follows:
 
 1. **Feature Preprocessing**: Selects relevant features using different feature selection methods.
-2. **Model Training**: Runs Ridge, Lasso, Linear Regression, XGBoost and a CVAE.
+2. **Model Training**: Runs Linear, Ridge, Lasso and Elastic Net Regression, XGBoost and a CVAE.
 3. **Evaluation**: Assesses performance using 4 different metrics (RMSE, MAE, Pearson & Spearmann Correlation and $R^2$).
 
 ## 🧪 Feature Preprocessing
@@ -25,13 +25,6 @@ You can tune the parameters for the feature selection scripts (e.g. number of to
 ##### *Note:*
 
 The feature selection process is not dynamic. This means that if you run multiple tasks (which probably means different datasets), your feature selection process will be the same for all the tasks. If you wish to have different tuning params for the feature selection, I recommend running the pipleine for the different tasks seperately (so leave only task of interest uncommented in the config file) and setting the `tuning.tsv` separately for each task.
-
-#### ⚠️Warning:
-
-If you change the feature selection scripts for any reason, make sure to do **one of the two**:
-
-* Comment out lines that skip creating the dataset if they already find existing file in the path (lines 17-20) in the `scripts/run_featsel.py`
-* Delete manually the already existing datasets of your task. These are found in the directory `dataset/processed/{task}`
 
 ## 🔧 How to set Tasks, Feature Selection and Models:
 
@@ -61,11 +54,13 @@ TASKS:
 
 The pipeline supports the following regression models:
 
-- **Ridge Regression**: Handles multicollinearity by adding an L2 penalty.
-- **Lasso Regression**: Adds an L1 penalty for feature selection.
 - **Linear Regression**: Standard least squares regression.
-- **Elastic Net**: Apply both types of penalties, L1 and L2
-- **XGBoost**: Gradient boosting for non-linear patterns.
+- **Ridge Regression**: Handles multicollinearity by adding an L2 penalty.
+- **Lasso Regression**: Adds an L1 penalty to promote sparsity, effectively performing feature selection by shrinking some coefficients to zero.
+- **Elastic Net**: Combines L1 and L2 penalties to balance sparsity and coefficient shrinkage, often used when features are correlated.
+- **XGBoost**: An efficient implementation of gradient boosting that builds an ensemble of decision trees to capture complex, non-linear patterns.
+- **CVAE**: Conditional Variational Autoencoder that models the meatbolic distribution, conditioned on gene expression. It learns a shared latent space that captures hidden variation and uncertainty in MSI data while leveraging scRNA data as context. The model encodes both scRNA and MSI during training and generates MSI predictions from scRNA alone during inference, enabling flexible and probabilistic mapping between modalities.
+
 
 In case you want to add new models, be aware that the models is called through the `run_methods.py`, so make sure the structure of it is similar to the already existing scripts and define a `{new_methods}_param.tsv`, in the folder `params`
 
