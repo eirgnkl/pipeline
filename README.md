@@ -7,8 +7,8 @@ This repository contains a Snakemake pipeline for predicting **metabolic distrib
 The pipeline is structured as follows:
 
 1. **Feature Preprocessing**: Selects relevant features using different feature selection methods.
-2. **Model Training**: Runs Linear, Ridge, Lasso and Elastic Net Regression, XGBoost and a CVAE.
-3. **Evaluation**: Assesses performance using 4 different metrics (RMSE, MAE, Pearson & Spearmann Correlation and $R^2$).
+2. **Model Training**: Runs Linear, Ridge, Lasso and Elastic Net Regression, XGBoost, GNN and a CVAE.
+3. **Evaluation**: Assesses performance using 5 different metrics (RMSE, MAE, Pearson & Spearmann Correlation and $R^2$).
 
 ## 🧪 Feature Preprocessing
 
@@ -20,7 +20,7 @@ The dataset undergoes multiple feature selection techniques to reduce dimensiona
 - **svd**: Singular value decomposition.
 - **svd+graph**: Graph-based selection on SVD processed data.
 
-You can tune the parameters for the feature selection scripts (e.g. number of top genes, number of components for svd, neighbours to take into account for graph etc.) in `scripts/feature_selection/tuning.tsv`
+You can tune the parameters for the feature selection scripts (e.g. number of top genes for hvg, number of components for svd, neighbours to take into account for graph etc.) in `scripts/feature_selection/tuning.tsv`
 
 ##### *Note:*
 
