@@ -13,11 +13,21 @@ import time
 # Be careful, so far there is no dynamic selection for feature selection. You can specify your parameters, but not have multiple
 # versions of the same preprocessing method
 
-# Generate tasks DataFrame and load configuration
+def safe_read_csv(path, max_wait=30, interval=1):
+    waited = 0
+    while waited < max_wait:
+        if os.path.exists(path) and os.path.getsize(path) > 0:
+            try:
+                return pd.read_csv(path, sep='\t')
+            except pd.errors.EmptyDataError:
+                pass  # Try again
+        time.sleep(interval)
+        waited += interval
+    raise RuntimeError(f"File '{path}' exists but is still empty or unreadable after {max_wait} seconds.")
+
 os.makedirs("data", exist_ok=True)
 tasks_df = create_tasks_df('config.yaml', save='data/tasks.tsv')
-time.sleep(5)
-tasks_df = pd.read_csv('data/tasks.tsv', sep='\t')
+tasks_df = safe_read_csv('data/tasks.tsv')
 
 # Extract unique task details
 hashes = tasks_df['hash'].unique()
