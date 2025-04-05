@@ -74,6 +74,19 @@ def run_gnn(adata_rna_train,
         X_train_np = adata_rna_train.obsm["svd_graph"]
         X_test_np = adata_rna_test.obsm["svd_graph"]
         Y_train_np, Y_test_np = adata_msi_train.X, adata_msi_test.X
+    elif featsel == "hvg_rna":
+        X_train_np = adata_rna_train.X  
+        X_test_np = adata_rna_test.X  
+        Y_train_np, Y_test_np = adata_msi_train.obsm["X_pca_split"], adata_msi_test.obsm["X_pca_split"]
+    elif featsel == "hvg_rna_svd":
+        X_train_np = adata_rna_train.obsm["svd_features"]
+        X_test_np = adata_rna_test.obsm["svd_features"]
+        Y_train_np, Y_test_np = adata_msi_train.obsm["X_pca_split"], adata_msi_test.obsm["X_pca_split"]
+    elif featsel == "hvg_rna_svd_graph":
+        X_train_np = adata_rna_train.obsm["svd_graph"]
+        X_test_np = adata_rna_test.obsm["svd_graph"] 
+        Y_train_np, Y_test_np = adata_msi_train.obsm["X_pca_split"], adata_msi_test.obsm["X_pca_split"]
+
     else:
         raise ValueError(f"Unsupported feature selection method: {featsel}")
     

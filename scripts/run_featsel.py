@@ -13,11 +13,11 @@ output_msi_train = snakemake.output.msi_ds_train
 output_msi_test = snakemake.output.msi_ds_test
 
 
-# --- Added: Skip if outputs already exist ---
-outputs = [output_rna_train, output_rna_test, output_msi_train, output_msi_test]
-if all(os.path.exists(f) for f in outputs):
-    print("All output files already exist. Skipping feature selection.", flush=True)
-    exit(0)
+# # --- Added: Skip if outputs already exist ---
+# outputs = [output_rna_train, output_rna_test, output_msi_train, output_msi_test]
+# if all(os.path.exists(f) for f in outputs):
+#     print("All output files already exist. Skipping feature selection.", flush=True)
+#     exit(0)
 
 tasks_df = pd.read_csv(snakemake.input.tasks_df, sep="\t")
 
