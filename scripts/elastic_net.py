@@ -24,7 +24,6 @@ def run_elastic_net(
         **kwargs):
     
     # Select features based on the provided feature selection method
-      # Select features based on the provided feature selection method
     if featsel == "hvg":
         X_train = adata_rna_train.X  
         X_test = adata_rna_test.X  
@@ -57,6 +56,14 @@ def run_elastic_net(
         X_train = adata_rna_train.obsm["svd_graph"]
         X_test = adata_rna_test.obsm["svd_graph"] 
         Y_train, Y_test = adata_msi_train.obsm["X_pca_split"], adata_msi_test.obsm["X_pca_split"]
+    elif featsel == "none":
+        X_train = adata_rna_train.X  
+        X_test = adata_rna_test.X  
+        Y_train, Y_test = adata_msi_train.X, adata_msi_test.X
+    elif featsel == "hvg_nomsi":
+        X_train = adata_rna_train.X  
+        X_test = adata_rna_test.X  
+        Y_train, Y_test = adata_msi_train.X, adata_msi_test.X
     else:
         raise ValueError(f"Unsupported feature selection method: {featsel}")
 
