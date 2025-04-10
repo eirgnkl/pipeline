@@ -14,3 +14,4 @@ hvg_rna_svd|n_components|50
 hvg_rna_svd_graph|top_genes|500
 hvg_rna_svd_graph|n_components|50
 hvg_rna_svd_graph|n_neighbours|5
+hvg_nomsi|top_genes|500
