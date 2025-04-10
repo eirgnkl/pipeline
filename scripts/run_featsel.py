@@ -49,7 +49,11 @@ tuning_file =snakemake.input.tuning
 tuning_df = pd.read_csv(tuning_file, sep="|")
 
 #Extract params
-tuning_params = tuning_df[tuning_df["method"] == featsel].iloc[0].to_dict()
+if featsel in tuning_df["method"].values:
+    tuning_params = tuning_df[tuning_df["method"] == featsel].iloc[0].to_dict()
+else:
+    print(f"[Warning] No tuning parameters found for featsel={featsel}. Proceeding with empty dict.")
+    tuning_params = {}
 
 # Pass the parameters into the process function
 feature_selection_module.process(
