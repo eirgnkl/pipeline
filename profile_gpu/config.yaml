@@ -9,7 +9,7 @@ cluster:
 #   - qos=gpu_priority
 #   - mem_mb=32000
 #   - disk_mb=40000
-#   - time='00:50:00'
+#   - time='04:00:00'
 
 default-resources:
   - partition=gpu_p
@@ -17,9 +17,9 @@ default-resources:
   - qos=gpu_normal
   - mem_mb=32000
   - disk_mb=40000
-  - time='01:30:00'
+  - time='06:00:00'
 
-jobs: 10
+jobs: 16
 # jobs: 2 #fix according to qos, 16 for gpu_normal, 8 for gpu_long, 2 for gpu_priority [useful when congested cluster] but every job is fast
 keep-going: True
 keep-incomplete: True
