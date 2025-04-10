@@ -11,6 +11,8 @@ from sklearn.neighbors import NearestNeighbors
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
 from scipy.stats import pearsonr, spearmanr
 from scipy.sparse import issparse
+import random
+
 
 def convert_to_tensor(X):
     """Convert a sparse matrix or other format to a torch tensor."""
@@ -53,6 +55,17 @@ def run_gnn(adata_rna_train,
             params,
             featsel,
             **kwargs):
+    
+    # Set random seeds for reproducibility
+    seed = 666
+    np.random.seed(seed)
+    random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)  # For multi-GPU
+        torch.backends.cudnn.deterministic = True  # Ensures deterministic results on GPU
+        torch.backends.cudnn.benchmark = False  # Ensures determinism, disables optimization for performance
+
     # --- Feature Selection ---
     if featsel == "hvg":
         X_train_np = adata_rna_train.X  
@@ -86,12 +99,18 @@ def run_gnn(adata_rna_train,
         X_train_np = adata_rna_train.obsm["svd_graph"]
         X_test_np = adata_rna_test.obsm["svd_graph"] 
         Y_train_np, Y_test_np = adata_msi_train.obsm["X_pca_split"], adata_msi_test.obsm["X_pca_split"]
-
+    elif featsel == "none":
+        X_train_np = adata_rna_train.X  
+        X_test_np = adata_rna_test.X  
+        Y_train_np, Y_test_np = adata_msi_train.X, adata_msi_test.X
+    elif featsel == "hvg_nomsi":
+        X_train_np = adata_rna_train.X  
+        X_test_np = adata_rna_test.X  
+        Y_train_np, Y_test_np = adata_msi_train.X, adata_msi_test.X
     else:
         raise ValueError(f"Unsupported feature selection method: {featsel}")
     
-    # --- Spatial Coordinates ---
-    # Here we assume the spatial coordinates are stored under 'spatial_warp' in the .obsm slot.
+    # Spatial Coordinates (saved in spatial_warp)
     coords_rna_train = adata_rna_train.obsm["spatial_warp"]
     coords_rna_test = adata_rna_test.obsm["spatial_warp"]
 
@@ -161,7 +180,7 @@ def run_gnn(adata_rna_train,
     # --- Evaluate the Model ---
     model.eval()
     with torch.no_grad():
-        Y_pred_train = model(train_data.x, train_data.edge_index).detach().cpu().numpy()
+        # Y_pred_train = model(train_data.x, train_data.edge_index).detach().cpu().numpy()
         Y_pred_test = model(test_data.x, test_data.edge_index).detach().cpu().numpy()
 
     # --- Compute Evaluation Metrics (Test Set) ---

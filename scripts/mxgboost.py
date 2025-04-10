@@ -6,10 +6,7 @@ from xgboost import XGBRegressor
 from scipy.stats import pearsonr, spearmanr
 from sklearn.metrics import root_mean_squared_error, r2_score  # Using MSE then taking sqrt
 from sklearn.metrics import mean_absolute_error
-
 from scipy.sparse import issparse
-# Set seed for NumPy
-np.random.seed(666)
 
 
 def ensure_gpu(data):
@@ -47,6 +44,10 @@ def run_xgboost(
         featsel,
         **kwargs):
     
+    # Set seed
+    seed = 666
+    np.random.seed(seed) 
+
     # Select features based on the provided feature selection method
     if featsel == "hvg":
         X_train = adata_rna_train.X  
@@ -80,6 +81,14 @@ def run_xgboost(
         X_train = adata_rna_train.obsm["svd_graph"]
         X_test = adata_rna_test.obsm["svd_graph"] 
         Y_train, Y_test = adata_msi_train.obsm["X_pca_split"], adata_msi_test.obsm["X_pca_split"]
+    elif featsel == "none":
+        X_train = adata_rna_train.X  
+        X_test = adata_rna_test.X  
+        Y_train, Y_test = adata_msi_train.X, adata_msi_test.X
+    elif featsel == "hvg_nomsi":
+        X_train = adata_rna_train.X  
+        X_test = adata_rna_test.X  
+        Y_train, Y_test = adata_msi_train.X, adata_msi_test.X
     else:
         raise ValueError(f"Unsupported feature selection method: {featsel}")
 
@@ -109,14 +118,14 @@ def run_xgboost(
     subsample = float(params.get("subsample", 0.9))
     colsample_bytree = float(params.get("colsample_bytree", 0.7))
     min_child_weight = int(params.get("min_child_weight", 2))
-    early_stopping_rounds = int(params.get("early_stopping_rounds", 20))
     n_jobs = int(params.get("n_jobs", 15))
+    early_stopping_rounds = int(params.get("early_stopping_rounds", 20))
 
 
     # Initialize XGBoost model on GPU
     xgb_model = XGBRegressor(
         device="cuda",
-        reg_alpha=alpha, 
+        reg_alpha=alpha,
         reg_lambda=lambda_,
         max_depth=max_depth,
         learning_rate=learning_rate,
@@ -124,17 +133,12 @@ def run_xgboost(
         subsample=subsample,
         colsample_bytree=colsample_bytree,
         min_child_weight=min_child_weight,
-        early_stopping_rounds=early_stopping_rounds,
-        n_jobs=n_jobs
+        n_jobs=n_jobs,
+        random_state=seed
     )
 
-    # Train the model
-    xgb_model.fit(
-        X_train, 
-        Y_train, 
-        eval_set=[(X_test, Y_test)], 
-        verbose=False
-    )
+    # Train the model without eval_set (no early stopping)
+    xgb_model.fit(X_train, Y_train, verbose=True)
 
     # Predict on the test data
     Y_pred = xgb_model.predict(X_test)
@@ -168,13 +172,3 @@ def run_xgboost(
     })
 
     return metrics, predictions
-# Got this error, had to add conversion to and from GPU arrays for the run of the model
-# UserWarning: [14:56:43] WARNING: /home/conda/feedstock_root/build_artifacts/xgboost-split_1738880369036/work/src/common/error_msg.cc:58: 
-# Falling back to prediction using DMatrix due to mismatched devices. 
-# This might lead to higher memory usage and slower performance. 
-# XGBoost is running on: cuda:0, while the input data is on: cpu.
-# Potential solutions:
-# - Use a data structure that matches the device ordinal in the booster.
-# - Set the device for booster before call to inplace_predict.
-
-# This warning will only be shown once.

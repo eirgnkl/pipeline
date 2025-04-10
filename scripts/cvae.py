@@ -8,6 +8,7 @@ from sklearn.metrics import r2_score, mean_squared_error
 from scipy.stats import pearsonr, spearmanr
 from scipy.sparse import issparse
 from sklearn.metrics import mean_absolute_error
+import random
 
 def convert_to_tensor(X):
     # If X is sparse, convert to dense
@@ -63,7 +64,16 @@ def run_cvae(adata_rna_train,
              params,
              featsel,
              **kwargs):
-    
+
+    # Set the random seed directly inside the function to ensure reproducibility
+    seed = 666
+    np.random.seed(seed)
+    random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)  # For multi-GPU
+        torch.backends.cudnn.deterministic = True  # Ensures deterministic results on GPU
+        torch.backends.cudnn.benchmark = False  # Ensures determinism, disables optimization for performance
     
     # --- Feature selection ---
     # Select features based on the provided feature selection method
@@ -99,6 +109,14 @@ def run_cvae(adata_rna_train,
         X_train = adata_rna_train.obsm["svd_graph"]
         X_test = adata_rna_test.obsm["svd_graph"] 
         Y_train, Y_test = adata_msi_train.obsm["X_pca_split"], adata_msi_test.obsm["X_pca_split"]
+    elif featsel == "none":
+        X_train = adata_rna_train.X  
+        X_test = adata_rna_test.X  
+        Y_train, Y_test = adata_msi_train.X, adata_msi_test.X
+    elif featsel == "hvg_nomsi":
+        X_train = adata_rna_train.X  
+        X_test = adata_rna_test.X  
+        Y_train, Y_test = adata_msi_train.X, adata_msi_test.X
     else:
         raise ValueError(f"Unsupported feature selection method: {featsel}")
 
@@ -133,7 +151,7 @@ def run_cvae(adata_rna_train,
     # --- Training loop ---
     model.train()
     dataset = torch.utils.data.TensorDataset(X_train, Y_train)
-    dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True)
+    dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True, worker_init_fn=np.random.seed(seed))
 
     for epoch in range(epochs):
         epoch_loss = 0.0
