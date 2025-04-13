@@ -69,7 +69,9 @@ def create_tasks_df(config, save=None):
         tasks_df = pd.concat(tasks_df, ignore_index=True)
     else:
         tasks_df = pd.DataFrame()
-    
+    #prevent from wrongly defining same fs method multiple times xD
+    tasks_df = tasks_df.drop_duplicates(subset=['task', 'method', 'featsel', 'hash'])
+
     # Save to file if required
     if save is not None:
         tasks_df.to_csv(save, sep='\t', index=False)
