@@ -49,8 +49,11 @@ tuning_file =snakemake.input.tuning
 tuning_df = pd.read_csv(tuning_file, sep="|")
 
 #Extract params
+# Extract all tuning parameters for the given method and build a parameter dictionary.
 if featsel in tuning_df["method"].values:
-    tuning_params = tuning_df[tuning_df["method"] == featsel].iloc[0].to_dict()
+    featsel_params_df = tuning_df[tuning_df["method"] == featsel]
+    # Create a dictionary with parameters as keys and values from the tuning file.
+    tuning_params = dict(zip(featsel_params_df["parameter"], featsel_params_df["value"]))
 else:
     print(f"[Warning] No tuning parameters found for featsel={featsel}. Proceeding with empty dict.")
     tuning_params = {}
