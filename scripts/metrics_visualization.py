@@ -31,7 +31,8 @@ featsel_map = {
     'hvg_svd': 'hs',
     'hvg_svd_graph': 'hsg',
     'svd': 's',
-    'svd_graph': 'sg'
+    'svd_graph': 'sg',
+    'hvg_nomsi': 'hvg_nomsi'
 }
 
 def get_method_label(method_name, featsel, method_params):
