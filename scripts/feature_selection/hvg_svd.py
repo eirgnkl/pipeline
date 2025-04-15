@@ -6,8 +6,8 @@ def process(adata_rna, adata_msi, output_rna_train, output_rna_test, output_msi_
    
    #Extract input params
     params = params or {}
-    top_genes = params.get("top_genes", 5000)
-    n_components = params.get("n_components", 100)
+    top_genes = params.get("top_genes", 2000)
+    n_components = params.get("n_components", 50)
     split_name = split
 
     #----------------------------------------------sc-seqRNA----------------------------------------------#
@@ -21,7 +21,7 @@ def process(adata_rna, adata_msi, output_rna_train, output_rna_test, output_msi_
     hvg_rna_test = hvg_rna[hvg_rna.obs[split_name] == "test"].copy()
 
     #-----SVD-----#
-    svd_reducer = TruncatedSVD(n_components=n_components) 
+    svd_reducer = TruncatedSVD(n_components=n_components, random_state=666) 
 
     svd_features_train = svd_reducer.fit_transform(hvg_rna_train.X.toarray())
     hvg_rna_train.obsm["svd_features"] = svd_features_train

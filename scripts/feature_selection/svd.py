@@ -6,7 +6,7 @@ def process(adata_rna, adata_msi, output_rna_train, output_rna_test, output_msi_
       
     #Extract input params
     params = params or {}
-    n_components = params.get("n_components", 16)
+    n_components = params.get("n_components", 50)
     split_name = split
     
     #Split into train test
@@ -15,7 +15,7 @@ def process(adata_rna, adata_msi, output_rna_train, output_rna_test, output_msi_
 
     #----------------------------------------------sc-seqRNA----------------------------------------------#
     #-----SVD-----#
-    svd_reducer = TruncatedSVD(n_components=n_components)
+    svd_reducer = TruncatedSVD(n_components=n_components, random_state=666)
 
     svd_features_train = svd_reducer.fit_transform(rna_train.X.toarray())
     rna_train.obsm["svd_features"] = svd_features_train

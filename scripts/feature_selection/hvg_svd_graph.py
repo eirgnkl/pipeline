@@ -8,8 +8,8 @@ from sklearn.preprocessing import StandardScaler
 def process(adata_rna, adata_msi, output_rna_train, output_rna_test, output_msi_train, output_msi_test, split, params=None):
     params = params or {}
 
-    top_genes = params.get("top_genes", 5000)
-    n_components = params.get("n_components", 16)
+    top_genes = params.get("top_genes", 2000)
+    n_components = params.get("n_components", 50)
     n_neighbors = params.get("n_neighbors", 6)
     split_name = split
     adata_rna.obs_names_make_unique()
@@ -27,7 +27,7 @@ def process(adata_rna, adata_msi, output_rna_train, output_rna_test, output_msi_
     hvg_rna_test = hvg_rna[hvg_rna.obs[split_name] == "test"]
 
     #-----SVD-----#
-    svd_reducer = TruncatedSVD(n_components=n_components) 
+    svd_reducer = TruncatedSVD(n_components=n_components, random_state=666) 
 
     svd_features_train = svd_reducer.fit_transform(hvg_rna_train.X.toarray())
     hvg_rna_train.obsm["svd_features"] = svd_features_train
@@ -51,12 +51,12 @@ def process(adata_rna, adata_msi, output_rna_train, output_rna_test, output_msi_
 
         adata_temp = sc.concat([hvg_rna_train, hvg_rna_test])
         sq.gr.spatial_neighbors(adata_temp, coord_type="grid", spatial_key="spatial", n_neighs=n_neighbors)
-        svd_reducer = TruncatedSVD(n_components=n_components)
+        svd_reducer = TruncatedSVD(n_components=n_components, random_state=666)
 
         graph_feat_train = svd_reducer.fit_transform(adata_temp[hvg_rna_train.obs_names].obsp["spatial_connectivities"])
         graph_feat_test = svd_reducer.fit_transform(adata_temp[hvg_rna_test.obs_names].obsp["spatial_connectivities"])
     else:
-         svd_reducer = TruncatedSVD(n_components=n_components)
+         svd_reducer = TruncatedSVD(n_components=n_components,random_state=666)
          graph_feat_train = svd_reducer.fit_transform(hvg_rna_train.obsp["spatial_connectivities"])
          graph_feat_test = svd_reducer.fit_transform(hvg_rna_test.obsp["spatial_connectivities"])
 

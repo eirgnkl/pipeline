@@ -9,7 +9,7 @@ def process(adata_rna, adata_msi, output_rna_train, output_rna_test, output_msi_
 
     #Extract input params
     params = params or {}
-    n_components = params.get("n_components", 16)
+    n_components = params.get("n_components", 50)
     n_neighbors = params.get("n_neighbors", 6)
     split_name = split
     adata_rna.obs_names_make_unique()
@@ -21,7 +21,7 @@ def process(adata_rna, adata_msi, output_rna_train, output_rna_test, output_msi_
 
     #----------------------------------------------sc-seqRNA----------------------------------------------#
     #-----SVD-----#
-    svd_reducer = TruncatedSVD(n_components=n_components)
+    svd_reducer = TruncatedSVD(n_components=n_components, random_state=666)
 
     svd_features_train = svd_reducer.fit_transform(rna_train.X.toarray())
     rna_train.obsm["svd_features"] = svd_features_train
@@ -44,12 +44,12 @@ def process(adata_rna, adata_msi, output_rna_train, output_rna_test, output_msi_
         rna_test.obs_names = rna_test.obs_names + "_22"
         adata_temp = sc.concat([rna_train, rna_test])
         sq.gr.spatial_neighbors(adata_temp, coord_type="grid", spatial_key="spatial", n_neighs=n_neighbors)
-        svd_reducer = TruncatedSVD(n_components=n_components)
+        svd_reducer = TruncatedSVD(n_components=n_components, random_state=666)
 
         graph_feat_train = svd_reducer.fit_transform(adata_temp[rna_train.obs_names].obsp["spatial_connectivities"])
         graph_feat_test = svd_reducer.fit_transform(adata_temp[rna_test.obs_names].obsp["spatial_connectivities"])
     else:
-         svd_reducer = TruncatedSVD(n_components=n_components)
+         svd_reducer = TruncatedSVD(n_components=n_components,random_state=666)
          graph_feat_train = svd_reducer.fit_transform(rna_train[rna_train.obs_names].obsp["spatial_connectivities"])
          graph_feat_test = svd_reducer.fit_transform(rna_test[rna_test.obs_names].obsp["spatial_connectivities"])
 

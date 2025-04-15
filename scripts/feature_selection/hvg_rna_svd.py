@@ -6,8 +6,8 @@ def process(adata_rna, adata_msi, output_rna_train, output_rna_test, output_msi_
    
    #Extract input params
     params = params or {}
-    top_genes = params.get("top_genes", 5000)
-    n_components = params.get("n_components", 100)
+    top_genes = params.get("top_genes", 2000)
+    n_components = params.get("n_components", 50)
     split_name = split
 
     #----------------------------------------------sc-seqRNA----------------------------------------------#
