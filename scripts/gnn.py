@@ -67,7 +67,7 @@ def run_gnn(adata_rna_train,
         torch.backends.cudnn.benchmark = False  # Ensures determinism, disables optimization for performance
 
     # --- Feature Selection ---
-    if featsel == "hvg":
+    if featsel in ["hvg", "none", "hvg_nomsi"]:
         X_train_np = adata_rna_train.X  
         X_test_np = adata_rna_test.X  
         Y_train_np, Y_test_np = adata_msi_train.X, adata_msi_test.X
@@ -99,14 +99,6 @@ def run_gnn(adata_rna_train,
         X_train_np = adata_rna_train.obsm["svd_graph"]
         X_test_np = adata_rna_test.obsm["svd_graph"] 
         Y_train_np, Y_test_np = adata_msi_train.obsm["X_pca_split"], adata_msi_test.obsm["X_pca_split"]
-    elif featsel == "none":
-        X_train_np = adata_rna_train.X  
-        X_test_np = adata_rna_test.X  
-        Y_train_np, Y_test_np = adata_msi_train.X, adata_msi_test.X
-    elif featsel == "hvg_nomsi":
-        X_train_np = adata_rna_train.X  
-        X_test_np = adata_rna_test.X  
-        Y_train_np, Y_test_np = adata_msi_train.X, adata_msi_test.X
     else:
         raise ValueError(f"Unsupported feature selection method: {featsel}")
     
@@ -140,13 +132,36 @@ def run_gnn(adata_rna_train,
     output_dim = Y_train_tensor.shape[1]
 
     # --- Build Training Graph ---
-    knn_train = NearestNeighbors(n_neighbors=k_train).fit(coords_rna_train)
-    _, indices_train = knn_train.kneighbors(coords_rna_train)
+    # knn_train = NearestNeighbors(n_neighbors=k_train).fit(coords_rna_train)
+    # _, indices_train = knn_train.kneighbors(coords_rna_train)
+    # train_edges = []
+    # for i, neighbors in enumerate(indices_train):
+    #     for neighbor in neighbors:
+    #         if i != neighbor:  # Avoid self-loops
+    #             train_edges.append([i, neighbor])
+    
+    slide_labels = adata_rna_train.obs["slide"].values
     train_edges = []
-    for i, neighbors in enumerate(indices_train):
-        for neighbor in neighbors:
-            if i != neighbor:  # Avoid self-loops
-                train_edges.append([i, neighbor])
+    if len(np.unique(slide_labels)) == 1:
+        knn = NearestNeighbors(n_neighbors=k_train).fit(coords_rna_train)
+        _, indices = knn.kneighbors(coords_rna_train)
+        for i, neighbors in enumerate(indices):
+            for j in neighbors:
+                if i != j:
+                    train_edges.append([i, j])
+    else:
+        for slide in np.unique(slide_labels):
+            idx = np.where(slide_labels == slide)[0]
+            coords = coords_rna_train[idx]
+            knn = NearestNeighbors(n_neighbors=k_train).fit(coords)
+            _, indices = knn.kneighbors(coords)
+            for i_local, neighbors in enumerate(indices):
+                i_global = idx[i_local]
+                for j_local in neighbors:
+                    j_global = idx[j_local]
+                    if i_global != j_global:
+                        train_edges.append([i_global, j_global])
+
     train_edge_index = torch.tensor(train_edges, dtype=torch.long).t().contiguous().to(device)
     train_data = Data(x=X_train_tensor, edge_index=train_edge_index)
 
@@ -166,14 +181,21 @@ def run_gnn(adata_rna_train,
         if epoch % 1000 == 0:
             print(f"Epoch {epoch}, Loss: {loss.item()}")
 
-    # --- Build Test Graph ---
-    knn_test = NearestNeighbors(n_neighbors=k_test).fit(coords_rna_test)
-    _, indices_test = knn_test.kneighbors(coords_rna_test)
+    # --- Build Test Graph (per slide) ---
     test_edges = []
-    for i, neighbors in enumerate(indices_test):
-        for neighbor in neighbors:
-            if i != neighbor:
-                test_edges.append([i, neighbor])
+    slide_labels_test = adata_rna_test.obs["slide"].values
+    for slide_id in np.unique(slide_labels_test):
+        idx = np.where(slide_labels_test == slide_id)[0]
+        coords = coords_rna_test[idx]
+        knn = NearestNeighbors(n_neighbors=k_test).fit(coords)
+        _, indices = knn.kneighbors(coords)
+        for i_local, neighbors in enumerate(indices):
+            i_global = idx[i_local]
+            for j_local in neighbors:
+                j_global = idx[j_local]
+                if i_global != j_global:
+                    test_edges.append([i_global, j_global])
+
     test_edge_index = torch.tensor(test_edges, dtype=torch.long).t().contiguous().to(device)
     test_data = Data(x=X_test_tensor, edge_index=test_edge_index)
 
