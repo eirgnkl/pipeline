@@ -1,7 +1,3 @@
-##Important: if your dataset is preprocessed and has already marked highly 
-##variable, the name in stored in var MUST BE "highly variable", else don't 
-##forget to change it in these scripts
-
 import scanpy as sc
 
 def process(adata_rna, adata_msi, output_rna_train, output_rna_test, output_msi_train, output_msi_test, split, params=None):
@@ -9,7 +5,10 @@ def process(adata_rna, adata_msi, output_rna_train, output_rna_test, output_msi_
     #Use an empty dict in case no params avail
     params = params or {}
     top_genes = params.get("top_genes", 2000)
+    top_mets = params.get("top_mets", 500)
     split_name = split
+    adata_rna.obs_names_make_unique()
+    adata_msi.obs_names_make_unique()
 
 
     #-----HVG-----#
@@ -24,7 +23,7 @@ def process(adata_rna, adata_msi, output_rna_train, output_rna_test, output_msi_
     #----------------------------------------------MSI----------------------------------------------#
     #MSI processed only for highly variable metabolites, kept hvg_ for uniformality in vars
     if "highly_variable" not in adata_msi.var.columns:
-        sc.pp.highly_variable_genes(adata_msi, flavor='seurat', n_top_genes=top_genes)
+        sc.pp.highly_variable_genes(adata_msi, flavor='seurat', n_top_genes=top_mets)
     hvg_msi = adata_msi[:, adata_msi.var["highly_variable"]].copy()
 
     hvg_msi_train = hvg_msi[hvg_msi.obs[split_name] == "train"].copy()

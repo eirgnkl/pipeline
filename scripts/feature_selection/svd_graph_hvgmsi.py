@@ -8,7 +8,9 @@ import pandas as pd
 
 def process(adata_rna, adata_msi, output_rna_train, output_rna_test, output_msi_train, output_msi_test, split, params=None):
     # Extract input params
+    
     params = params or {}
+    top_mets = params.get("top_mets", 500)
     n_components = params.get("n_components", 128)
     n_components_graph = params.get("n_components_graph", 32)
     n_neighbors = params.get("n_neighbors", 6)
@@ -60,19 +62,23 @@ def process(adata_rna, adata_msi, output_rna_train, output_rna_test, output_msi_
     # Combine & scale features
     sc_svd = StandardScaler()
     sc_graph = StandardScaler()
-    rna_train.obsm["svd_graph"] = np.concatenate([sc_svd.fit_transform(svd_features_train),sc_graph.fit_transform(graph_feat_train)], axis=1)
+    rna_train.obsm["svd_graph"] = np.concatenate([sc_svd.fit_transform(svd_features_train), sc_graph.fit_transform(graph_feat_train)], axis=1)
     rna_test.obsm["svd_graph"] = np.concatenate([sc_svd.fit_transform(svd_features_test),sc_graph.fit_transform(graph_feat_test)], axis=1)
 
     # Remove internal tracking column to avoid write conflicts and preserve index alignment
     rna_train.obs.drop(columns=["og_index"], inplace=True)
     rna_test.obs.drop(columns=["og_index"], inplace=True)
-
-    # MSI split (no processing)
-    msi_train = adata_msi[adata_msi.obs[split_name] == "train"].copy()
-    msi_test = adata_msi[adata_msi.obs[split_name] == "test"].copy()
+    #----------------------------------------------MSI----------------------------------------------#
+    # Filter for highly variable metabolites
+    if "highly_variable" not in adata_msi.var.columns:
+        sc.pp.highly_variable_genes(adata_msi, flavor='seurat', n_top_genes=top_mets)
+    
+    hvg_msi = adata_msi[:, adata_msi.var["highly_variable"]].copy()
+    hvg_msi_train = hvg_msi[hvg_msi.obs[split_name] == "train"].copy()
+    hvg_msi_test = hvg_msi[hvg_msi.obs[split_name] == "test"].copy()
 
     # Save
     rna_train.write(output_rna_train)
     rna_test.write(output_rna_test)
-    msi_train.write(output_msi_train)
-    msi_test.write(output_msi_test)
+    hvg_msi_train.write(output_msi_train)
+    hvg_msi_test.write(output_msi_test)
