@@ -77,25 +77,17 @@ def run_cvae(adata_rna_train,
     
     # --- Feature selection ---
     # Select features based on the provided feature selection method
-    if featsel == "hvg":
+    if featsel in {"hvg", "hvg_nomsi", "none"}:
         X_train = adata_rna_train.X  
         X_test = adata_rna_test.X  
         Y_train, Y_test = adata_msi_train.X, adata_msi_test.X
-    elif featsel == "hvg_svd":
+    elif featsel in {"hvg_svd", "svd", "svd_hvgmsi"}:
         X_train = adata_rna_train.obsm["svd_features"]
         X_test = adata_rna_test.obsm["svd_features"]
         Y_train, Y_test = adata_msi_train.X, adata_msi_test.X
-    elif featsel == "hvg_svd_graph":
+    elif featsel in {"hvg_svd_graph", "svd_graph", "svd_graph_hvgmsi"}:
         X_train = adata_rna_train.obsm["svd_graph"]
         X_test = adata_rna_test.obsm["svd_graph"] 
-        Y_train, Y_test = adata_msi_train.X, adata_msi_test.X
-    elif featsel == "svd":
-        X_train = adata_rna_train.obsm["svd_features"]
-        X_test = adata_rna_test.obsm["svd_features"]
-        Y_train, Y_test = adata_msi_train.X, adata_msi_test.X
-    elif featsel == "svd_graph":
-        X_train = adata_rna_train.obsm["svd_graph"]
-        X_test = adata_rna_test.obsm["svd_graph"]
         Y_train, Y_test = adata_msi_train.X, adata_msi_test.X
     elif featsel == "hvg_rna":
         X_train = adata_rna_train.X  
@@ -109,14 +101,6 @@ def run_cvae(adata_rna_train,
         X_train = adata_rna_train.obsm["svd_graph"]
         X_test = adata_rna_test.obsm["svd_graph"] 
         Y_train, Y_test = adata_msi_train.obsm["X_pca_split"], adata_msi_test.obsm["X_pca_split"]
-    elif featsel == "none":
-        X_train = adata_rna_train.X  
-        X_test = adata_rna_test.X  
-        Y_train, Y_test = adata_msi_train.X, adata_msi_test.X
-    elif featsel == "hvg_nomsi":
-        X_train = adata_rna_train.X  
-        X_test = adata_rna_test.X  
-        Y_train, Y_test = adata_msi_train.X, adata_msi_test.X
     else:
         raise ValueError(f"Unsupported feature selection method: {featsel}")
 
@@ -174,34 +158,70 @@ def run_cvae(adata_rna_train,
         avg_loss = epoch_loss / num_batches
         print(f"Epoch {epoch+1}/{epochs}, Loss: {avg_loss:.4f}")
 
-        # --- Inference ---
-        model.eval()
-        with torch.no_grad():
-            z_sample = torch.randn(X_test.size(0), latent_dim).to(device)
-            decoder_input = torch.cat([X_test, z_sample], dim=1)
-            Y_pred = model.decoder(decoder_input).cpu().numpy()
+    # --- Inference ---
+    model.eval()
+    with torch.no_grad():
+        z_sample = torch.randn(X_test.size(0), latent_dim).to(device)
+        decoder_input = torch.cat([X_test, z_sample], dim=1)
+        Y_pred = model.decoder(decoder_input).cpu().numpy()
+        # Train prediction (reconstruct from encoded latent space)
+        y_recon_train, _, _ = model(X_train, Y_train)
+        Y_pred_train = y_recon_train.cpu().numpy()
 
-        # --- Evaluation metrics ---
-        Y_test_np = Y_test.cpu().numpy()
-        pearson_corr = pearsonr(Y_pred.flatten(), Y_test_np.flatten())[0]
-        spearman_corr = spearmanr(Y_pred.flatten(), Y_test_np.flatten())[0]
-        rmse_test = np.sqrt(mean_squared_error(Y_test_np, Y_pred))
-        r2_test = r2_score(Y_test_np, Y_pred)
-        mae_test = mean_absolute_error(Y_test_np, Y_pred)
 
-        #Save results to a DataFrame
-        metrics = pd.DataFrame({
-            'rmse': [rmse_test],
-            'mae': [mae_test],
-            'r2': [r2_test],
-            'pearson': [pearson_corr],
-            'spearman': [spearman_corr]
-        })
+    # --- Evaluation metrics ---
+    Y_test_np = Y_test.cpu().numpy()
+    Y_train_np = Y_train.cpu().numpy()
 
-        #Add this for interpretability later, check outputs of each model's preds
-        predictions = pd.DataFrame({
-            'y_true': Y_test_np.flatten(),
-            'y_pred': Y_pred.flatten()
+    # Global correlation
+    pearson_corr = pearsonr(Y_pred.flatten(), Y_test_np.flatten())[0]
+    spearman_corr = spearmanr(Y_pred.flatten(), Y_test_np.flatten())[0]
+
+    # Per-metabolite correlation
+    per_met_pearsons = [pearsonr(Y_pred[:, i], Y_test_np[:, i])[0] for i in range(Y_test_np.shape[1])]
+    per_met_spearmans = [spearmanr(Y_pred[:, i], Y_test_np[:, i])[0] for i in range(Y_test_np.shape[1])]
+    avg_pearson_per_metabolite = np.nanmean(per_met_pearsons)
+    avg_spearman_per_metabolite = np.nanmean(per_met_spearmans)
+
+    # Standard metrics
+    rmse_test = np.sqrt(mean_squared_error(Y_test_np, Y_pred))
+    r2_test = r2_score(Y_test_np, Y_pred)
+    mae_test = mean_absolute_error(Y_test_np, Y_pred)
+    
+
+    # Relative RMSE (skip zero-mean metabolites)
+    per_met_rmse = [np.sqrt(np.mean((Y_pred[:, i] - Y_test_np[:, i]) ** 2)) for i in range(Y_test_np.shape[1])]
+    per_met_mean = [np.mean(Y_test_np[:, i]) for i in range(Y_test_np.shape[1])]
+    rel_rmse = [r / m if m != 0 else np.nan for r, m in zip(per_met_rmse, per_met_mean)]
+    avg_rel_rmse = np.nanmean(rel_rmse)
+
+    # Train set metrics
+    rmse_train = np.sqrt(mean_squared_error(Y_train_np, Y_pred_train))
+    r2_train = r2_score(Y_train_np, Y_pred_train)
+    mae_train = mean_absolute_error(Y_train_np, Y_pred_train)
+
+
+    # Save metrics
+    metrics = pd.DataFrame({
+        'rmse': [rmse_test],
+        'mae': [mae_test],
+        'r2': [r2_test],
+        'pearson': [pearson_corr],
+        'spearman': [spearman_corr],
+        'avg_pearson_per_metabolite': [avg_pearson_per_metabolite],
+        'avg_spearman_per_metabolite': [avg_spearman_per_metabolite],
+        'avg_rel_rmse': [avg_rel_rmse],
+        'train_rmse': [rmse_train],
+        'train_mae': [mae_train],
+        'train_r2': [r2_train]
+
+    })
+
+    #Add this for interpretability later, check outputs of each model's preds
+    predictions = pd.DataFrame({
+        'y_true': Y_test_np.flatten(),
+        'y_pred': Y_pred.flatten()
         })
 
     return metrics, predictions
+

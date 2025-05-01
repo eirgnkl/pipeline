@@ -67,25 +67,17 @@ def run_gnn(adata_rna_train,
         torch.backends.cudnn.benchmark = False  # Ensures determinism, disables optimization for performance
 
     # --- Feature Selection ---
-    if featsel in ["hvg", "none", "hvg_nomsi"]:
+    if featsel in {"hvg", "none", "hvg_nomsi"}:
         X_train_np = adata_rna_train.X  
         X_test_np = adata_rna_test.X  
         Y_train_np, Y_test_np = adata_msi_train.X, adata_msi_test.X
-    elif featsel == "hvg_svd":
+    elif featsel in {"hvg_svd", "svd", "svd_hvgmsi"}:
         X_train_np = adata_rna_train.obsm["svd_features"]
         X_test_np = adata_rna_test.obsm["svd_features"]
         Y_train_np, Y_test_np = adata_msi_train.X, adata_msi_test.X
-    elif featsel == "hvg_svd_graph":
+    elif featsel in {"hvg_svd_graph", "svd_graph", "svd_graph_hvgmsi"}:
         X_train_np = adata_rna_train.obsm["svd_graph"]
         X_test_np = adata_rna_test.obsm["svd_graph"] 
-        Y_train_np, Y_test_np = adata_msi_train.X, adata_msi_test.X
-    elif featsel == "svd":
-        X_train_np = adata_rna_train.obsm["svd_features"]
-        X_test_np = adata_rna_test.obsm["svd_features"]
-        Y_train_np, Y_test_np = adata_msi_train.X, adata_msi_test.X
-    elif featsel == "svd_graph":
-        X_train_np = adata_rna_train.obsm["svd_graph"]
-        X_test_np = adata_rna_test.obsm["svd_graph"]
         Y_train_np, Y_test_np = adata_msi_train.X, adata_msi_test.X
     elif featsel == "hvg_rna":
         X_train_np = adata_rna_train.X  
@@ -202,23 +194,53 @@ def run_gnn(adata_rna_train,
     # --- Evaluate the Model ---
     model.eval()
     with torch.no_grad():
-        # Y_pred_train = model(train_data.x, train_data.edge_index).detach().cpu().numpy()
+        Y_pred_train = model(train_data.x, train_data.edge_index).detach().cpu().numpy()
         Y_pred_test = model(test_data.x, test_data.edge_index).detach().cpu().numpy()
+
+    Y_train_np = Y_train_tensor.cpu().numpy()
+    rmse_train = np.sqrt(mean_squared_error(Y_train_np, Y_pred_train))
+    r2_train = r2_score(Y_train_np, Y_pred_train)
+    mae_train = mean_absolute_error(Y_train_np, Y_pred_train)
+
 
     # --- Compute Evaluation Metrics (Test Set) ---
     Y_test_np = Y_test_tensor.cpu().numpy()
+
+    # Global Pearson & Spearman
     pearson_corr = pearsonr(Y_pred_test.flatten(), Y_test_np.flatten())[0]
     spearman_corr = spearmanr(Y_pred_test.flatten(), Y_test_np.flatten())[0]
+
+    # Per-metabolite correlations
+    per_met_pearsons = [pearsonr(Y_pred_test[:, i], Y_test_np[:, i])[0] for i in range(Y_test_np.shape[1])]
+    per_met_spearmans = [spearmanr(Y_pred_test[:, i], Y_test_np[:, i])[0] for i in range(Y_test_np.shape[1])]
+    avg_pearson_per_metabolite = np.nanmean(per_met_pearsons)
+    avg_spearman_per_metabolite = np.nanmean(per_met_spearmans)
+
+    # RMSE, R2, MAE
     rmse_test = np.sqrt(mean_squared_error(Y_test_np, Y_pred_test))
     r2_test = r2_score(Y_test_np, Y_pred_test)
     mae_test = mean_absolute_error(Y_test_np, Y_pred_test)
 
+    # Per-metabolite RMSE and relative RMSE
+    per_met_rmse = [np.sqrt(np.mean((Y_pred_test[:, i] - Y_test_np[:, i]) ** 2)) for i in range(Y_test_np.shape[1])]
+    per_met_mean = [np.mean(Y_test_np[:, i]) for i in range(Y_test_np.shape[1])]
+    rel_rmse = [r / m if m != 0 else np.nan for r, m in zip(per_met_rmse, per_met_mean)]
+    avg_rel_rmse = np.nanmean(rel_rmse)
+
+
+    # Combine metrics
     metrics = pd.DataFrame({
         'rmse': [rmse_test],
         'mae': [mae_test],
         'r2': [r2_test],
         'pearson': [pearson_corr],
-        'spearman': [spearman_corr]
+        'spearman': [spearman_corr],
+        'avg_pearson_per_metabolite': [avg_pearson_per_metabolite],
+        'avg_spearman_per_metabolite': [avg_spearman_per_metabolite],
+        'avg_rel_rmse': [avg_rel_rmse],
+        'train_rmse': [rmse_train],
+        'train_mae': [mae_train],
+        'train_r2': [r2_train]
     })
 
     predictions = pd.DataFrame({
