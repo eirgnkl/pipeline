@@ -19,9 +19,29 @@ os.makedirs(save_directory, exist_ok=True)
 df = pd.read_csv(file_path, sep='\t')
 
 # Define metrics and their optimization direction
-metrics = ['r2', 'mae', 'rmse', 'pearson', 'spearman']
-best_direction = {'r2': 'max', 'mae': 'min', 'rmse': 'min', 'pearson': 'max', 'spearman': 'max'}
-highlight_colors = {'r2': 'steelblue', 'mae': 'forestgreen', 'rmse': 'darkorange', 'pearson': 'purple', 'spearman': 'red'}
+metrics = ['r2', 'mae', 'rmse', 'pearson', 'spearman',
+           'avg_pearson_per_metabolite', 'avg_spearman_per_metabolite', 'avg_rel_rmse']
+best_direction = {
+    'r2': 'max',
+    'mae': 'min',
+    'rmse': 'min',
+    'pearson': 'max',
+    'spearman': 'max',
+    'avg_pearson_per_metabolite': 'max',
+    'avg_spearman_per_metabolite': 'max',
+    'avg_rel_rmse': 'min'
+}
+
+highlight_colors = {
+    'r2': 'steelblue',
+    'mae': 'forestgreen',
+    'rmse': 'darkorange',
+    'pearson': 'purple',
+    'spearman': 'red',
+    'avg_pearson_per_metabolite': 'magenta',
+    'avg_spearman_per_metabolite': 'brown',
+    'avg_rel_rmse': 'teal'
+}
 default_color = 'lightgray'
 text_color = 'white'
 
